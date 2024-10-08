@@ -19,19 +19,20 @@ main = playIO (InWindow "Counter" (400, 400) (0, 0)) -- Or FullScreen
 --      Data types
 --Entities
 -- data Entity location = Ship | Asteroid | PowerUp | Bullet
-data Entity = ShipEntity Ship
-            | AsteroidEntity Asteroid
-            | PowerUpEntity PowerUp
-            | BulletEntity Bullet
-
-data EntityAttributes = EntityAttributes {
- position :: Position,
- direction :: Direction,
- speed :: Speed,
- size :: Size
+data Entity = Entity {
+    entityType :: EntityType,
+    position :: Position,
+    direction :: Direction,
+    speed :: Speed,
+    size :: Size
 }
 
-type Position = (Int, Int)
+data EntityType = MkShip Ship
+            | MkAsteroid Asteroid
+            | MkPowerUp PowerUp
+            | MkBullet Bullet
+
+type Position = (Float, Float)
 type Direction = Int
 type Speed = Float
 type Size = Float
@@ -46,7 +47,6 @@ data Stats = Stats {
 
 --PowerUps
 data PowerUp = PowerUp {
-    powerUpAttributes :: EntityAttributes
 } --TrippleShot | Invincibility | ExtraLife | SpeedBoost
 
 emptyPowerUp :: PowerUp
@@ -54,21 +54,16 @@ emptyPowerUp = PowerUp {}
 
 --Bullets
 data Bullet = Bullet {
-    bulletAttributes :: EntityAttributes,
     count :: Int
 }
 --Ship
 data Ship = Ship {
-    shipAttributes :: EntityAttributes
-}
-
-data PlayerInfo = PlayerInfo {
     player :: Player,
     score :: Score,
     powerUp :: PowerUp,
     playerStats :: Stats,
     playerBullet :: Bullet,
-    playerFiringRate :: FiringRate
+    playerFiringRate :: FiringRate 
 }
 
 data Player = P1 | P2
@@ -77,7 +72,6 @@ type FiringRate = Float
 
 --Asteroid
 data Asteroid = Asteroid {
-    asteroidAttributes :: EntityAttributes,
     asteroidStats :: Stats
 }
 
@@ -87,17 +81,11 @@ data Level = Lvl1 | Lvl2 | Lvl3 | CustomLvl {
 }
 
 --Methods
-getAttributes :: Entity -> EntityAttributes
-getAttributes (ShipEntity ship) = shipAttributes ship
-getAttributes (AsteroidEntity asteroid) = asteroidAttributes asteroid
-getAttributes (PowerUpEntity powerUp)  = powerUpAttributes powerUp
-getAttributes (BulletEntity bullet)   = bulletAttributes bullet
 
 printEntity :: Entity -> String
 printEntity e = sPosition ++ sDirection ++ sSpeed ++ sSize
   where
-    sPosition = show $ position a
-    sDirection = show $ direction a
-    sSpeed = show $ speed a
-    sSize = show $ size a
-    a = getAttributes e
+    sPosition = show $ position e
+    sDirection = show $ direction e
+    sSpeed = show $ speed e
+    sSize = show $ size e

@@ -15,4 +15,4 @@ data GameState = GameState {
                  }
 
 initialState :: GameState
-initialState = GameState ShowNothing 0
+initialState = GameState (ShowAChar 'A') 0
