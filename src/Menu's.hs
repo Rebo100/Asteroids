@@ -1,8 +1,16 @@
 module Menu's where
 
-data StartMenu = StartMenu {
+    import Graphics.Gloss
+
+    data StartMenu = StartMenu {
     title :: String,
     startButton :: Button
 }
 
-data Button
+    data Button = Button {
+    text :: String,
+    shape :: Picture
+}
+
+    drawButton :: Button -> Picture
+    drawButton b = undefined
