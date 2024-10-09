@@ -11,9 +11,9 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = Pictures (infoPictures : buttonPictures) -- resize size $ Pictures (infoPictures : buttonPictures)
+viewPure gstate = resize size $ Pictures (infoPictures : buttonPictures)
   where
-    -- size = (fromIntegral (fst $ windowSize gstate), fromIntegral (snd $ windowSize gstate))
+    size = (fromIntegral (fst $ windowSize gstate), fromIntegral (snd $ windowSize gstate))
     infoPictures = case infoToShow gstate of
       ShowNothing   -> blank
       ShowANumber n -> color green (text (show n))

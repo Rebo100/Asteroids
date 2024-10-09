@@ -23,8 +23,9 @@ step secs gstate
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
 input event@(EventKey {}) gstate = return (inputKey event gstate) -- Handle key / mouse presses
--- input (EventResize (x, y)) gstate = return $ gstate -- Handle window resize
+input (EventResize (x, y)) gstate = return $ gstate {windowSize = (x, y)} -- Handle window resize
+input _ gstate = return gstate -- Otherwise keep the same | Unhandled key type (like mousePress, can be implemented later)
+
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) _ _ _) gstate = gstate { infoToShow = ShowAChar c, keyPressed = c } -- register pressed key
-inputKey _ gstate = gstate -- Otherwise keep the same | Unhandled key type (like mousePress, can be implemented later)
