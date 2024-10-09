@@ -14,17 +14,18 @@ step secs gstate
   = -- We show a new random number
     do randomNumber <- randomIO
        let newNumber = abs randomNumber `mod` 10
-       return $ GameState (ShowANumber newNumber) 0 (entities gstate) (buttons gstate)
+       return $ gstate { infoToShow = ShowANumber newNumber}
   | otherwise
   = -- Just update the elapsed time
     return $ gstate { elapsedTime = elapsedTime gstate + secs }
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
-input e gstate = return (inputKey e gstate)
+input event@(EventKey {}) gstate = return $ inputKey event gstate -- Handle key / mouse presses 
+input (EventResize (x, y)) gstate = return $ gstate {windowSize = (x, y)} -- Handle window resize
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) _ _ _) gstate
   = -- If the user presses a character key, show that one
-    gstate { infoToShow = ShowAChar c }
-inputKey _ gstate = gstate -- Otherwise keep the same
+    gstate { infoToShow = ShowAChar c, keyPressed = c }
+inputKey _ gstate = gstate -- Otherwise keep the same | Unhandled key type (like mousePress, can be implemented later)

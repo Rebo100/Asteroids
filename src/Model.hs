@@ -4,6 +4,7 @@ module Model where
 import Entities
 import Menu's
 import Graphics.Gloss
+import Graphics.Gloss.Interface.IO.Game
 data InfoToShow = ShowNothing
                 | ShowANumber Int
                 | ShowAChar   Char
@@ -15,9 +16,11 @@ nO_SECS_BETWEEN_CYCLES = 5
 data GameState = GameState {
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
+                   windowSize :: (Int, Int),
+                   keyPressed :: Char,
                    entities :: [Entity],
                    buttons :: [Button]
                  }
 
-initialState :: GameState
-initialState = GameState (ShowHighscore 0) 0 [] [Button "" [(0, 0), (200, 200)] (makeColorI 141 141 141 255)]
+initialState :: (Int, Int) -> GameState
+initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' [] startMenu

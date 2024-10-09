@@ -2,17 +2,17 @@ module Menu's where
 
     import Graphics.Gloss
 
-    data StartMenu = StartMenu {
-    title :: String,
-    startButton :: Button
-}
+    type StartMenu = [Button]
+    startMenu = [Button "startButton" "" [(-200, -100), (100, 100)] (makeColorI 141 141 141 255)]
 
     data Button = Button {
+    buttonName :: String,
     buttonText :: String,
     buttonShape :: [(Float, Float)], -- Add the 2 opposite corners
     buttonColor :: Color
 }
 
+-- Methods
     drawButton :: Button -> Maybe Color -> Picture -- Take 2 corners and return a rectangle shaped button
     drawButton button Nothing = color (buttonColor button) $ Polygon [(x, y), (x, y2), (x2, y2), (x2, y)] -- Take the default color
       where [(x, y), (x2, y2)] = buttonShape button
