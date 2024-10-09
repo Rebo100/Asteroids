@@ -6,6 +6,7 @@ import Model
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
+import Config
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -21,11 +22,9 @@ step secs gstate
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
-input event@(EventKey {}) gstate = return $ inputKey event gstate -- Handle key / mouse presses 
-input (EventResize (x, y)) gstate = return $ gstate {windowSize = (x, y)} -- Handle window resize
+input event@(EventKey {}) gstate = return (inputKey event gstate) -- Handle key / mouse presses
+-- input (EventResize (x, y)) gstate = return $ gstate -- Handle window resize
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char c) _ _ _) gstate
-  = -- If the user presses a character key, show that one
-    gstate { infoToShow = ShowAChar c, keyPressed = c }
+inputKey (EventKey (Char c) _ _ _) gstate = gstate { infoToShow = ShowAChar c, keyPressed = c } -- register pressed key
 inputKey _ gstate = gstate -- Otherwise keep the same | Unhandled key type (like mousePress, can be implemented later)

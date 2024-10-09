@@ -3,6 +3,7 @@ module Menu's where
     import Graphics.Gloss
 
     type StartMenu = [Button]
+    startMenu :: StartMenu
     startMenu = [Button "startButton" "" [(-200, -100), (100, 100)] (makeColorI 141 141 141 255)]
 
     data Button = Button {
