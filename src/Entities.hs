@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
 module Entities where
 import Graphics.Gloss (Vector)
 -- Entities
@@ -57,9 +59,7 @@ type Score = Int
 type FiringRate = Float
 
 -- Asteroid
-data Asteroid = Asteroid
-  { asteroidStats :: Stats
-  }
+data Asteroid = Asteroid { asteroidStats :: Stats }
 
 -- Levels
 data Level
