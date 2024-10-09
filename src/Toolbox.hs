@@ -1,6 +1,13 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Toolbox where
 
 import Graphics.Gloss
+import Config
 
-drawRectangle :: (Float, Float) -> (Float, Float) -> Picture
-drawRectangle (x, y) (x2, y2) = Polygon [(x, y), (x, y2), (x2, y), (x2, y2)]
+-- Window resize
+resize :: (Float, Float) -> Picture -> Picture
+resize (x, y) p =
+  let
+      scaleX = (x / fromIntegral (fst originalWindowSize))
+      scaleY = (y / fromIntegral (snd originalWindowSize))
+   in Scale scaleX scaleY p -- Apply a scale to picture
