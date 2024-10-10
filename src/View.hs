@@ -28,4 +28,5 @@ resize (x, y) p =
   let
       scaleX = (x / fromIntegral (fst Config.originalWindowSize))
       scaleY = (y / fromIntegral (snd Config.originalWindowSize))
-   in Scale scaleX scaleY p -- Apply a scale to picture
+      min' = min scaleX scaleY
+   in Scale min' min' p -- Apply a scale to picture
