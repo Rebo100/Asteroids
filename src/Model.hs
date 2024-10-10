@@ -5,6 +5,8 @@ import Entities
 import Menu's
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
+import Config (originalWindowSize)
+import Data.Bifunctor (Bifunctor(bimap))
 data InfoToShow = ShowNothing
                 | ShowANumber Int
                 | ShowAChar   Char
@@ -24,4 +26,4 @@ data GameState = GameState {
                  }
 
 initialState :: (Int, Int) -> GameState
-initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' (0, 0) [] startMenu
+initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' (bimap fromIntegral fromIntegral Config.originalWindowSize) [] startMenu
