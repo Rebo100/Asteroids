@@ -19,7 +19,7 @@ viewPure gstate = resize size $ Pictures (infoPictures : buttonPictures)
       ShowANumber n -> color green (text (show n))
       ShowAChar   c -> color green (text [c])
       ShowHighscore score -> color white (text ("Highscore: " ++ show score))
-    buttonPictures = map (`drawSelectedButton` Nothing) (buttons gstate)
+    buttonPictures = map (`drawButton` mousePosition gstate) (buttons gstate)
 
 
 -- Window resize

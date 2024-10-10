@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 -- | This module defines how the state changes
 --   in response to time and user input
 module Controller where
@@ -23,9 +24,12 @@ step secs gstate
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
 input event@(EventKey {}) gstate = return (inputKey event gstate) -- Handle key / mouse presses
-input (EventResize (x, y)) gstate = return $ gstate {windowSize = (x, y)} -- Handle window resize
-input _ gstate = return gstate -- Otherwise keep the same | Unhandled key type (like mousePress, can be implemented later)
+input (EventResize (x, y)) gstate = return $ gstate { windowSize = (x, y) } -- Handle window resize
+input (EventMotion (x, y)) gstate = return $ gstate { mousePosition = (x, y) }
+input _ gstate = return gstate -- Otherwise keep the same
 
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char c) _ _ _) gstate = gstate { infoToShow = ShowAChar c, keyPressed = c } -- register pressed key
+inputKey (EventKey (Char c) _ _ _) gstate = gstate { infoToShow = ShowAChar c, keyPressed = c } -- register keyboard key
+inputKey (EventKey (MouseButton LeftButton) Down _ (x, y)) gstate = gstate -- register mouseClick
+inputKey _ gstate = gstate -- Non handled inputs

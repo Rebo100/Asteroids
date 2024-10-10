@@ -18,9 +18,10 @@ data GameState = GameState {
                    elapsedTime :: Float,
                    windowSize :: (Int, Int),
                    keyPressed :: Char,
+                   mousePosition :: (Float, Float),
                    entities :: [Entity],
                    buttons :: [Button]
                  }
 
 initialState :: (Int, Int) -> GameState
-initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' [] startMenu
+initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' (0, 0) [] startMenu
