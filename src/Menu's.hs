@@ -2,7 +2,8 @@ module Menu's where
 
     import Graphics.Gloss
     import Toolbox
-
+    import Data.Bifunctor (Bifunctor(bimap))
+    
     type StartMenu = [Button]
     startMenu :: StartMenu
     startMenu = [
@@ -18,9 +19,11 @@ module Menu's where
 }
 
 -- Methods
-    drawButton :: Button -> (Float, Float) -> Picture
-    drawButton button mouse | inRectangle mouse (buttonShape button) = drawSelectedButton button Nothing
+    drawButton :: Button -> (Float, Float) -> Float -> Picture
+    drawButton button mouse scale | inRectangle mouse scaledUp = drawSelectedButton button Nothing
                             | otherwise = drawButton' button Nothing
+                            where 
+                                scaledUp = map (bimap (*scale) (*scale)) (buttonShape button)
 
 
     drawSelectedButton :: Button -> Maybe Color -> Picture
