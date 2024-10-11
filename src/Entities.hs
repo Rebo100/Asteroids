@@ -8,7 +8,8 @@ data Entity = Entity
   { entityType :: EntityType,
     position :: Position,
     vector :: Vector,
-    size :: Size
+    size :: Size,
+    speed :: Float
   }
 
 data EntityType
@@ -18,12 +19,10 @@ data EntityType
   | MkBullet Bullet
 
 type Position = (Float, Float)
-
 type Size = Float
 
 -- Stats
 type Lives = Int
-
 type Damage = Float
 
 data Stats = Stats
@@ -42,6 +41,10 @@ data Bullet = Bullet
   { count :: Int
   }
 
+data Player = P1 | P2
+type Score = Int
+type FiringRate = Float
+
 -- Ship
 data Ship = Ship
   { player :: Player,
@@ -52,11 +55,22 @@ data Ship = Ship
     playerFiringRate :: FiringRate
   }
 
-data Player = P1 | P2
-
-type Score = Int
-
-type FiringRate = Float
+-- Create a player ship and set all of the initial values
+playerShip :: Entity
+playerShip = Entity
+  { entityType = MkShip Ship
+    { player = P1,
+      score = 0,
+      powerUp = emptyPowerUp,
+      playerStats = Stats { damage = 1, lives = 3 },
+      playerBullet = Bullet { count = 1 },
+      playerFiringRate = 1
+    },
+    position = (30, 30),
+    vector = (0, 1),
+    size = 10,
+    speed = 1
+  }
 
 -- Asteroid
 data Asteroid = Asteroid { asteroidStats :: Stats }
@@ -67,5 +81,5 @@ data Level
   | Lvl2
   | Lvl3
   | CustomLvl
-      { entities :: [Entity]
+      { levelEntities :: [Entity]
       }
