@@ -11,22 +11,12 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = resize size $ Pictures (infoPictures : buttonPictures)
+viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures)
   where
-    size = (fromIntegral (fst $ windowSize gstate), fromIntegral (snd $ windowSize gstate))
+    scale = windowScale gstate
     infoPictures = case infoToShow gstate of
       ShowNothing   -> blank
       ShowANumber n -> color green (text (show n))
       ShowAChar   c -> color green (text [c])
       ShowHighscore score -> color white (text ("Highscore: " ++ show score))
     buttonPictures = map (`drawButton` mousePosition gstate) (buttons gstate)
-
-
--- Window resize
-resize :: (Float, Float) -> Picture -> Picture
-resize (x, y) p =
-  let
-      scaleX = (x / fromIntegral (fst Config.originalWindowSize))
-      scaleY = (y / fromIntegral (snd Config.originalWindowSize))
-      min' = min scaleX scaleY
-   in Scale min' min' p -- Apply a scale to picture

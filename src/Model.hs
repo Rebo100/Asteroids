@@ -18,12 +18,14 @@ nO_SECS_BETWEEN_CYCLES = 5
 data GameState = GameState {
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
-                   windowSize :: (Int, Int),
+                   windowScale :: Float,
                    keyPressed :: Char,
                    mousePosition :: (Float, Float),
                    entities :: [Entity],
                    buttons :: [Button]
                  }
 
-initialState :: (Int, Int) -> GameState
-initialState (x, y) = GameState (ShowHighscore 0) 0 (x, y) ' ' (bimap fromIntegral fromIntegral Config.originalWindowSize) [] startMenu
+initialState :: GameState
+initialState =
+  let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
+  in GameState (ShowHighscore 0) 0 1 '-' mousePos [] startMenu

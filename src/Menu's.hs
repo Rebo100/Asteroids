@@ -35,19 +35,3 @@ module Menu's where
         [(x, y), (x2, y2)] = buttonShape button
         s = translate (x + (x2 - x) / 4) (y + 2) $ Scale 0.4 0.4 $ color white $ text (buttonText button)
         b c = color c $ drawRectangle (buttonShape button)
-
-
-{--
-    drawButton' button Nothing = 
-        let 
-            [(x, y), (x2, y2)] = buttonShape button
-            b = color (buttonColor button) $ drawRectangle (buttonShape button) 
-            s = translate (x + (x2 - x)/4) (y+2) $ Scale 0.4 0.4 $ color white $ text (buttonText button)
-        in Pictures [b, s] -- Take the default color
-    drawButton' button (Just c) = 
-        let 
-            [(x, y), (x2, y2)] = buttonShape button
-            b = color c $ drawRectangle (buttonShape button)
-            s = translate (x + (x2 - x)/4) (y+2) $ Scale 0.4 0.4 $ color white $ text (buttonText button)
-        in Pictures [b, s] -- Change the color (e.g. Button is selected)
-        --}
