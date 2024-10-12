@@ -19,7 +19,7 @@ data GameState = GameState {
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
                    windowScale :: Float,
-                   keyPressed :: Char,
+                   keyPressed :: [Char],
                    mousePosition :: (Float, Float),
                    entities :: [Entity],
                    buttons :: [Button]
@@ -33,7 +33,7 @@ initialState =
     infoToShow = ShowHighscore 0,
     elapsedTime = 0,
     windowScale = 1,
-    keyPressed = '-',
+    keyPressed = [],
     mousePosition = mousePos,
     entities = [playerShip],
     buttons = startMenu
@@ -47,7 +47,7 @@ lvl1 =
         { infoToShow = ShowHighscore 0,
           elapsedTime = 0,
           windowScale = 1,
-          keyPressed = '-',
+          keyPressed = [],
           mousePosition = mousePos,
           entities = [playerShip],
           buttons = []

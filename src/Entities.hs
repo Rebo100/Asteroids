@@ -67,9 +67,9 @@ playerShip = Entity
       playerFiringRate = 1
     },
     position = (30, 30),
-    vector = (0, 1),
+    vector = (0, 0),
     size = 10,
-    speed = 1
+    speed = 500
   }
 
 -- Asteroid
