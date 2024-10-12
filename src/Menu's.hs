@@ -7,17 +7,19 @@ module Menu's where
     type StartMenu = [Button]
     startMenu :: StartMenu
     startMenu = [
-        Button "startButton" "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255),
-        Button "exitButton" "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255)
+        Button "startButton" "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
+        Button "exitButton" "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
         ]
 
     data Button = Button {
     buttonName :: String,
     buttonText :: String,
     buttonShape :: [(Float, Float)], -- Add the 2 opposite corners
-    buttonColor :: Color
-}
+    buttonColor :: Color,
+    buttonFunction :: ButtonFunction
+    }
 
+    data ButtonFunction = StartGame | ExitGame | ResumeGame 
 -- Methods
     drawButton :: Button -> (Float, Float) -> Float -> Picture
     drawButton button mouse scale | inRectangle mouse scaledUp = drawSelectedButton button Nothing

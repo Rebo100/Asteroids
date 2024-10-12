@@ -38,3 +38,20 @@ initialState =
     entities = [playerShip],
     buttons = startMenu
   }
+
+lvl1 :: GameState
+lvl1 =
+  let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
+   in
+      GameState
+        { infoToShow = ShowHighscore 0,
+          elapsedTime = 0,
+          windowScale = 1,
+          keyPressed = '-',
+          mousePosition = mousePos,
+          entities = [playerShip],
+          buttons = []
+        }
+  -- Button functionality
+doButtonFunction :: ButtonFunction -> GameState -> GameState
+doButtonFunction StartGame gstate = lvl1
