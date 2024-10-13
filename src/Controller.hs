@@ -13,15 +13,16 @@ import Data.Bifunctor (Bifunctor (bimap))
 import Menu's
 import Toolbox
 import Data.List (findIndex)
+import System.Exit (exitSuccess)
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate
-  | elapsedTime gstate + secs > 0   = 
+  | isRunning gstate = 
     do -- Update the game state
       return $ gstate { elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate) } 
   | otherwise                       = -- Just update the time    
-      return $ gstate { elapsedTime = elapsedTime gstate + secs }
+      exitSuccess
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState

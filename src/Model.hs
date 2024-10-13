@@ -7,6 +7,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import Config (originalWindowSize)
 import Data.Bifunctor (Bifunctor(bimap))
+import System.Exit (exitSuccess)
 data InfoToShow = ShowNothing
                 | ShowANumber Int
                 | ShowAChar   Char
@@ -16,6 +17,7 @@ nO_SECS_BETWEEN_CYCLES :: Float
 nO_SECS_BETWEEN_CYCLES = 5
 
 data GameState = GameState {
+                   isRunning :: Bool,
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
                    windowScale :: Float,
@@ -30,6 +32,7 @@ initialState =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
   -- in GameState (ShowHighscore 0) 0 1 '-' mousePos [] startMenu
   in GameState {
+    isRunning = True,
     infoToShow = ShowHighscore 0,
     elapsedTime = 0,
     windowScale = 1,
@@ -44,7 +47,9 @@ lvl1 =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
    in
       GameState
-        { infoToShow = ShowHighscore 0,
+        { 
+          isRunning = True,
+          infoToShow = ShowHighscore 0,
           elapsedTime = 0,
           windowScale = 1,
           keyPressed = [],
@@ -54,4 +59,5 @@ lvl1 =
         }
   -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
-doButtonFunction StartGame gstate = lvl1
+doButtonFunction StartGame _ = lvl1
+doButtonFunction ExitGame gstate = gstate { isRunning = False }
