@@ -81,6 +81,11 @@ updateEntityPosition secs (nx, ny) entity@Entity { entityType = MkShip _ } =
   where
     (x, y) = position entity -- Current/old position entity
     speedValue = speed entity -- Speed attribute given in Entity.hs
--- Update position for other entities
-updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } = undefined
+-- Update the asteroid's position
+updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } = 
+  entity { position = (x + vx * speedValue * secs, y + vy * speedValue * secs) }
+  where
+    (x, y) = position entity
+    (vx, vy) = vector entity
+    speedValue = speed entity
 updateEntityPosition _ _ entity = undefined

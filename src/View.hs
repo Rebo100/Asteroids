@@ -35,7 +35,7 @@ drawShip :: Entity -> Picture
 drawShip entity = color white (uncurry translate (position entity) (circleSolid (size entity)))
 
 drawAsteroid :: Entity -> Picture
-drawAsteroid = undefined
+drawAsteroid entity = color red (uncurry translate (position entity) (circleSolid (size entity)))
 
 drawPowerUp :: Entity -> Picture
 drawPowerUp = undefined

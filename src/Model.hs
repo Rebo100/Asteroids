@@ -8,6 +8,8 @@ import Graphics.Gloss.Interface.IO.Game
 import Config (originalWindowSize)
 import Data.Bifunctor (Bifunctor(bimap))
 import System.Exit (exitSuccess)
+import System.Random (mkStdGen, StdGen)
+
 data InfoToShow = ShowNothing
                 | ShowANumber Int
                 | ShowAChar   Char
@@ -45,18 +47,21 @@ initialState =
 lvl1 :: GameState
 lvl1 =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
-   in
-      GameState
-        { 
-          isRunning = True,
-          infoToShow = ShowHighscore 0,
-          elapsedTime = 0,
-          windowScale = 1,
-          keyPressed = [],
-          mousePosition = mousePos,
-          entities = [playerShip],
-          buttons = []
-        }
+      gen = mkStdGen 42  -- Seed for the asteroids (Should be random each time, which it isnt rn)
+      asteroids = makeAsteroids 20 gen  -- Generate 20 random asteroids
+  in
+    GameState
+      { 
+        isRunning = True,
+        infoToShow = ShowHighscore 0,
+        elapsedTime = 0,
+        windowScale = 1,
+        keyPressed = [],
+        mousePosition = mousePos,
+        entities = [playerShip] ++ asteroids,
+        buttons = []
+      }
+
   -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
 doButtonFunction StartGame _ = lvl1

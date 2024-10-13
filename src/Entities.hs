@@ -2,6 +2,9 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 module Entities where
 import Graphics.Gloss (Vector)
+import System.Random (mkStdGen, randomR, StdGen)
+
+
 -- Entities
 -- data Entity location = Ship | Asteroid | PowerUp | Bullet
 data Entity = Entity
@@ -66,7 +69,7 @@ playerShip = Entity
       playerBullet = Bullet { count = 1 },
       playerFiringRate = 1
     },
-    position = (30, 30),
+    position = (0, 0),
     vector = (0, 0),
     size = 10,
     speed = 500
@@ -74,6 +77,32 @@ playerShip = Entity
 
 -- Asteroid
 data Asteroid = Asteroid { asteroidStats :: Stats }
+
+makeAsteroid :: Entity
+makeAsteroid = Entity
+  { entityType = MkAsteroid Asteroid 
+    { asteroidStats = Stats 
+      { damage = 1, 
+        lives = 1 
+      }
+    },
+    position = (0, 0),
+    vector = (0, -1),
+    size = 20,
+    speed = 30
+  }
+
+-- Make a list of asteroids based on amount wanted for a level and a random seed 
+makeAsteroids :: Int -> StdGen -> [Entity]
+makeAsteroids 0 _ = []
+makeAsteroids n gen =
+  let
+    -- Generate random x and y positions (Should be window size, currently placeholder)
+    (xPosition, gen1) = randomR (-400, 400) gen
+    (yPosition, gen2) = randomR (-400, 400) gen1
+    asteroid = makeAsteroid { position = (xPosition, yPosition) }
+  in asteroid : makeAsteroids (n - 1) gen2
+
 
 -- Levels
 data Level
