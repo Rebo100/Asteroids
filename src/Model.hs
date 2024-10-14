@@ -58,7 +58,7 @@ lvl1 =
         windowScale = 1,
         keyPressed = [],
         mousePosition = mousePos,
-        entities = [playerShip] ++ asteroids,
+        entities = playerShip : asteroids,
         buttons = []
       }
 
