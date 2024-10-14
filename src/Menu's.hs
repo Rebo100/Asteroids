@@ -6,20 +6,26 @@ module Menu's where
     data Menu = 
       StartMenu StartMenu |
       PauseMenu PauseMenu |
-      NoMenu NoMenu
+      None
 
+-- Startmenu
     type StartMenu = [Button]
     startMenu = StartMenu
       [ 
-        Button "startButton" "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
-        Button "exitButton" "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
+        Button "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
+        Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
       ]
+
+-- Pausemenu
     type PauseMenu = [Button]
-    type NoMenu = [Button]
-    noMenu = NoMenu []
+    pauseMenu = PauseMenu
+        [ 
+          Button "Resume" [(-120, 50), (120, 100)] (makeColorI 141 141 141 255) ResumeGame,
+          Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
+          Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
+        ]
 
     data Button = Button {
-    buttonName :: String,
     buttonText :: String,
     buttonShape :: [(Float, Float)], -- Add the 2 opposite corners
     buttonColor :: Color,
@@ -32,12 +38,13 @@ module Menu's where
 --Menu's
     drawMenu :: Menu -> (Float, Float) -> Float -> [Picture]
     drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
-    drawMenu (NoMenu _) mouse scale = []
+    drawMenu (PauseMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
+    drawMenu None _ _ = []
 
     getButtons :: Menu -> [Button]
     getButtons (StartMenu xs) = xs
     getButtons (PauseMenu xs) = xs
-    getButtons _ = []
+    getButtons None = []
 
 --Buttons
     drawButton :: Button -> (Float, Float) -> Float -> Picture

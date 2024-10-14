@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
+{-# LANGUAGE NamedFieldPuns #-}
 -- | This module defines how the state changes
 --   in response to time and user input
 module Controller where
@@ -51,8 +52,13 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
     scaledUps = map (map (bimap (* windowScale gstate) (* windowScale gstate)) . buttonShape) (buttons gstate ++ getButtons (menu gstate))
     inRectangles = map (mouse `inRectangle`) scaledUps
   in handleClickEvent (findIndex id inRectangles) mouse gstate
+
+-- Handle EscButton
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ (StartMenu _)) = gstate {isRunning = False}
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ (PauseMenu _)) = gstate {menu = None}
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ None) = gstate {menu = pauseMenu}
+
 -- Any other event
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = gstate { isRunning = False }
 inputKey _ gstate = gstate
 
 handleClickEvent :: Maybe Int -> (Float, Float) -> GameState -> GameState

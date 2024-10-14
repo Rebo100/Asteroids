@@ -59,7 +59,7 @@ lvl1 =
         mousePosition = mousePos,
         entities = playerShip : asteroids,
         buttons = [],
-        menu = noMenu
+        menu = None
       }
 
   -- Button functionality
