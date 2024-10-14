@@ -18,12 +18,11 @@ import System.Exit (exitSuccess)
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate
-  | isRunning gstate =
-    do -- Update the game state
-      return $ gstate { elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate) }
-  | otherwise                       = -- Just update the time    
-      exitSuccess
+step secs gstate | not (isRunning gstate) = exitSuccess
+                 | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
+                 | otherwise = do -- Update the game state
+                 return $ gstate {elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate)}
+
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -54,15 +53,13 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 
 -- Handle EscButton
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ (StartMenu _)) = gstate {isRunning = False}
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ (PauseMenu _)) = gstate {menu = None}
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ None) = gstate {menu = pauseMenu}
-
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _)) = gstate {isRunning = False}
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = pauseGame gstate
 -- Any other event
 inputKey _ gstate = gstate
 
 handleClickEvent :: Maybe Int -> (Float, Float) -> GameState -> GameState
-handleClickEvent index mouse gstate = 
+handleClickEvent index mouse gstate =
   let
     list = buttons gstate ++ getButtons (menu gstate)
   in maybe gstate (\x -> buttonFunction (list!!x) `doButtonFunction` gstate) index

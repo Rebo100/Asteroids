@@ -17,6 +17,7 @@ data InfoToShow = ShowNothing
 
 data GameState = GameState {
                    isRunning :: Bool,
+                   isPaused :: Bool,
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
                    windowScale :: Float,
@@ -33,6 +34,7 @@ initialState =
   -- in GameState (ShowHighscore 0) 0 1 '-' mousePos [] startMenu
   in GameState {
     isRunning = True,
+    isPaused = False,
     infoToShow = ShowHighscore 0,
     elapsedTime = 0,
     windowScale = 1,
@@ -52,6 +54,7 @@ lvl1 =
     GameState
       { 
         isRunning = True,
+        isPaused = False,
         infoToShow = ShowHighscore 0,
         elapsedTime = 0,
         windowScale = 1,
@@ -62,7 +65,14 @@ lvl1 =
         menu = None
       }
 
+
+
+-- Pause game
+pauseGame :: GameState -> GameState
+pauseGame gstate@(GameState _ paused _ _ _ _ _ _ _ _) | paused = gstate {isPaused = False, menu = None}
+                                                      | otherwise = gstate {isPaused = True, menu = pauseMenu}
   -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
 doButtonFunction StartGame _ = lvl1
+doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }

@@ -32,7 +32,7 @@ module Menu's where
     buttonFunction :: ButtonFunction
     }
 
-    data ButtonFunction = StartGame | ExitGame | ResumeGame 
+    data ButtonFunction = StartGame | ExitGame | ResumeGame
 
 -- Methods
 --Menu's
