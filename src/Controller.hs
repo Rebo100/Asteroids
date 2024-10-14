@@ -21,8 +21,9 @@ step :: Float -> GameState -> IO GameState
 step secs gstate | not (isRunning gstate) = exitSuccess
                  | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
                  | otherwise = do -- Update the game state
-                 return $ gstate {elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate)}
-
+                 -- Decide if we have to add new asteroid or not
+                  (newEntities, newAsteroidTime) <- createAsteroid (elapsedTime gstate + secs) gstate
+                  return $ gstate { elapsedTime = elapsedTime gstate + secs, timeSinceAsteroid = newAsteroidTime, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) newEntities }
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -53,7 +54,7 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 
 -- Handle EscButton
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _)) = gstate {isRunning = False}
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _) _ _) = gstate {isRunning = False}
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = pauseGame gstate
 -- Any other event
 inputKey _ gstate = gstate
@@ -66,7 +67,7 @@ handleClickEvent index mouse gstate =
 
 -- Calc the direction of the player, take the list of keys pressed and return tuple of floats (position on xy field)
 playerDirection :: [Char] -> (Float, Float)
-playerDirection keys = normalize (foldr key (0, 0) keys)
+playerDirection keys = normalizeVector (foldr key (0, 0) keys)
   where
     key k (x, y)
       | k == 'w'  = (x, y + 1)
@@ -74,11 +75,6 @@ playerDirection keys = normalize (foldr key (0, 0) keys)
       | k == 's'  = (x, y - 1)
       | k == 'd'  = (x + 1, y)
       | otherwise = (x, y)
-    -- Normalize the value to prevent moving faster diagonally (Or do we want that? "Feature not a bug")
-    normalize (x, y)
-      | length > 0  = (x / length, y / length)
-      | otherwise   = (0, 0)
-      where length  = sqrt (x^2 + y^2)
 
 -- Update position for entities. Take secs passed, new position and entity we want to adjust position for
 updateEntityPosition :: Float -> (Float, Float) -> Entity -> Entity
@@ -96,3 +92,40 @@ updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } =
     (vx, vy) = vector entity
     speedValue = speed entity
 updateEntityPosition _ _ entity = undefined
+
+-- Create an asteroid
+createAsteroid :: Float -> GameState -> IO ([Entity], Float)
+createAsteroid time gstate
+  | asteroidInterval gstate == Nothing = return (entities gstate, timeSinceAsteroid gstate)  -- we dont want asteroids (Value for interval is nothing: See model.hs)
+  | timeSinceLastAsteroid >= interval = do 
+    -- Create a new asteroid
+      let (windowWidth, windowHeight) = getWindowSize gstate -- Get windowsize
+      (randomX, randomY, vectorX, vectorY) <- generateAsteroidValues windowWidth windowHeight -- Determine the position and direction of the asteroid
+      let newAsteroid = makeAsteroid { position = (randomX, randomY), vector = (vectorX, vectorY) } -- Create asteroid through makeAsteroid function with values we jsut got
+          newEntities = newAsteroid : entities gstate -- Add the asteroid to the list of entities
+      return (newEntities, time) -- Return the new list of entities and time
+  | otherwise = return (entities gstate, timeSinceAsteroid gstate)
+  where
+    -- Calc time since last asteroid was made
+    timeSinceLastAsteroid = time - timeSinceAsteroid gstate
+    Just interval = asteroidInterval gstate
+
+-- Helper function to get the scaled window size
+getWindowSize :: GameState -> (Float, Float)
+getWindowSize gstate = (fromIntegral (fst originalWindowSize) * windowScale gstate, fromIntegral (snd originalWindowSize) * windowScale gstate)
+
+-- Generate a random position and direction for an asteroid
+generateAsteroidValues :: Float -> Float -> IO (Float, Float, Float, Float)
+generateAsteroidValues windowWidth windowHeight = do
+  -- Generate a random number (elke border has a number, randomly choose a border, then on the border randomly spawn on x and y positions)
+  -- Used as reference for randomRIO usage: https://stackoverflow.com/questions/22526629/am-i-using-randomrio-wrong
+  border <- randomRIO (1, 4) :: IO Int
+  -- Generate a random x and y value
+  randomX <- randomRIO (-windowWidth / 2, windowWidth / 2)
+  randomY <- randomRIO (-windowHeight / 2, windowHeight / 2)
+  let (x, y, (vecX, vecY))
+        | border == 1 = (randomX, windowHeight / 2, normalizeVector (0 - randomX, -windowHeight / 2))
+        | border == 2 = (randomX, -windowHeight / 2, normalizeVector (0 - randomX, windowHeight / 2))
+        | border == 3 = (-windowWidth / 2, randomY, normalizeVector (windowWidth / 2, 0 - randomY))
+        | border == 4 = (windowWidth / 2, randomY, normalizeVector (-windowWidth / 2, 0 - randomY))
+  return (x, y, vecX, vecY)

@@ -92,18 +92,6 @@ makeAsteroid = Entity
     speed = 30
   }
 
--- Make a list of asteroids based on amount wanted for a level and a random seed 
-makeAsteroids :: Int -> StdGen -> [Entity]
-makeAsteroids 0 _ = []
-makeAsteroids n gen =
-  let
-    -- Generate random x and y positions (Should be window size, currently placeholder)
-    (xPosition, gen1) = randomR (-400, 400) gen
-    (yPosition, gen2) = randomR (-400, 400) gen1
-    asteroid = makeAsteroid { position = (xPosition, yPosition) }
-  in asteroid : makeAsteroids (n - 1) gen2
-
-
 -- Levels
 data Level
   = Lvl1

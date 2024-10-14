@@ -25,7 +25,9 @@ data GameState = GameState {
                    mousePosition :: (Float, Float),
                    entities :: [Entity],
                    buttons :: [Button],
-                   menu :: Menu
+                   menu :: Menu,
+                   timeSinceAsteroid :: Float,
+                   asteroidInterval :: Maybe Float
                  }
 
 initialState :: GameState
@@ -42,14 +44,14 @@ initialState =
     mousePosition = mousePos,
     entities = [playerShip],
     buttons = [],
-    menu = startMenu
+    menu = startMenu,
+    timeSinceAsteroid = 0,
+    asteroidInterval = Nothing
   }
 
 lvl1 :: GameState
 lvl1 =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
-      gen = mkStdGen 42  -- Seed for the asteroids (Should be random each time, which it isnt rn)
-      asteroids = makeAsteroids 20 gen  -- Generate 20 random asteroids
   in
     GameState
       { 
@@ -60,16 +62,18 @@ lvl1 =
         windowScale = 1,
         keyPressed = [],
         mousePosition = mousePos,
-        entities = playerShip : asteroids,
+        entities = [playerShip],
         buttons = [],
-        menu = None
+        menu = None,
+        timeSinceAsteroid = 0,
+        asteroidInterval = Just 2
       }
 
 
 
 -- Pause game
 pauseGame :: GameState -> GameState
-pauseGame gstate@(GameState _ paused _ _ _ _ _ _ _ _) | paused = gstate {isPaused = False, menu = None}
+pauseGame gstate@(GameState _ paused _ _ _ _ _ _ _ _ _ _) | paused = gstate {isPaused = False, menu = None}
                                                       | otherwise = gstate {isPaused = True, menu = pauseMenu}
   -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
