@@ -3,13 +3,20 @@ module Menu's where
     import Graphics.Gloss
     import Toolbox
     import Data.Bifunctor (Bifunctor(bimap))
-    
+    data Menu = 
+      StartMenu StartMenu |
+      PauseMenu PauseMenu |
+      NoMenu NoMenu
+
     type StartMenu = [Button]
-    startMenu :: StartMenu
-    startMenu = [
+    startMenu = StartMenu
+      [ 
         Button "startButton" "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
         Button "exitButton" "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
-        ]
+      ]
+    type PauseMenu = [Button]
+    type NoMenu = [Button]
+    noMenu = NoMenu []
 
     data Button = Button {
     buttonName :: String,
@@ -20,7 +27,19 @@ module Menu's where
     }
 
     data ButtonFunction = StartGame | ExitGame | ResumeGame 
+
 -- Methods
+--Menu's
+    drawMenu :: Menu -> (Float, Float) -> Float -> [Picture]
+    drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
+    drawMenu (NoMenu _) mouse scale = []
+
+    getButtons :: Menu -> [Button]
+    getButtons (StartMenu xs) = xs
+    getButtons (PauseMenu xs) = xs
+    getButtons _ = []
+
+--Buttons
     drawButton :: Button -> (Float, Float) -> Float -> Picture
     drawButton button mouse scale | inRectangle mouse scaledUp = drawSelectedButton button Nothing
                             | otherwise = drawButton' button Nothing

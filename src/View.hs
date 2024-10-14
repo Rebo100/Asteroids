@@ -12,7 +12,7 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ entityPictures)
+viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ entityPictures ++ menu')
   where
     scale = windowScale gstate
     infoPictures = case infoToShow gstate of
@@ -22,6 +22,7 @@ viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++
       ShowHighscore score -> color white (text ("Highscore: " ++ show score))
     buttonPictures = map (\x -> drawButton x (mousePosition gstate) scale) (buttons gstate)
     entityPictures = map drawEntity (entities gstate)
+    menu' = drawMenu (menu gstate) (mousePosition gstate) scale
 
 drawEntity :: Entity -> Picture
 drawEntity entity = drawEntityType (entityType entity) 

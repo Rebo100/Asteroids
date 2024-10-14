@@ -15,9 +15,6 @@ data InfoToShow = ShowNothing
                 | ShowAChar   Char
                 | ShowHighscore Int
 
-nO_SECS_BETWEEN_CYCLES :: Float
-nO_SECS_BETWEEN_CYCLES = 5
-
 data GameState = GameState {
                    isRunning :: Bool,
                    infoToShow  :: InfoToShow,
@@ -26,7 +23,8 @@ data GameState = GameState {
                    keyPressed :: [Char],
                    mousePosition :: (Float, Float),
                    entities :: [Entity],
-                   buttons :: [Button]
+                   buttons :: [Button],
+                   menu :: Menu
                  }
 
 initialState :: GameState
@@ -41,7 +39,8 @@ initialState =
     keyPressed = [],
     mousePosition = mousePos,
     entities = [playerShip],
-    buttons = startMenu
+    buttons = [],
+    menu = startMenu
   }
 
 lvl1 :: GameState
@@ -59,7 +58,8 @@ lvl1 =
         keyPressed = [],
         mousePosition = mousePos,
         entities = playerShip : asteroids,
-        buttons = []
+        buttons = [],
+        menu = noMenu
       }
 
   -- Button functionality

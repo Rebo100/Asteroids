@@ -18,9 +18,9 @@ import System.Exit (exitSuccess)
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate
-  | isRunning gstate = 
+  | isRunning gstate =
     do -- Update the game state
-      return $ gstate { elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate) } 
+      return $ gstate { elapsedTime = elapsedTime gstate + secs, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) (entities gstate) }
   | otherwise                       = -- Just update the time    
       exitSuccess
 
@@ -48,14 +48,18 @@ inputKey (EventKey (Char key) Up _ _) gstate
 -- Handle mouse clicks on buttons
 inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   let
-    scaledUps = map (map (bimap (* windowScale gstate) (* windowScale gstate)) . buttonShape) (buttons gstate)
+    scaledUps = map (map (bimap (* windowScale gstate) (* windowScale gstate)) . buttonShape) (buttons gstate ++ getButtons (menu gstate))
     inRectangles = map (mouse `inRectangle`) scaledUps
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 -- Any other event
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = gstate { isRunning = False }
 inputKey _ gstate = gstate
 
 handleClickEvent :: Maybe Int -> (Float, Float) -> GameState -> GameState
-handleClickEvent index mouse gstate = maybe gstate (\x -> buttonFunction (buttons gstate!!x) `doButtonFunction` gstate) index
+handleClickEvent index mouse gstate = 
+  let
+    list = buttons gstate ++ getButtons (menu gstate)
+  in maybe gstate (\x -> buttonFunction (list!!x) `doButtonFunction` gstate) index
 
 -- Calc the direction of the player, take the list of keys pressed and return tuple of floats (position on xy field)
 playerDirection :: [Char] -> (Float, Float)
@@ -68,7 +72,7 @@ playerDirection keys = normalize (foldr key (0, 0) keys)
       | k == 'd'  = (x + 1, y)
       | otherwise = (x, y)
     -- Normalize the value to prevent moving faster diagonally (Or do we want that? "Feature not a bug")
-    normalize (x, y) 
+    normalize (x, y)
       | length > 0  = (x / length, y / length)
       | otherwise   = (0, 0)
       where length  = sqrt (x^2 + y^2)
@@ -76,13 +80,13 @@ playerDirection keys = normalize (foldr key (0, 0) keys)
 -- Update position for entities. Take secs passed, new position and entity we want to adjust position for
 updateEntityPosition :: Float -> (Float, Float) -> Entity -> Entity
 -- Update the players position
-updateEntityPosition secs (nx, ny) entity@Entity { entityType = MkShip _ } = 
+updateEntityPosition secs (nx, ny) entity@Entity { entityType = MkShip _ } =
   entity { position = (x + nx * speedValue * secs, y + ny * speedValue * secs) } -- we add nx/ny (new x/y value) to the original position and multiply it by speed and time
   where
     (x, y) = position entity -- Current/old position entity
     speedValue = speed entity -- Speed attribute given in Entity.hs
 -- Update the asteroid's position
-updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } = 
+updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } =
   entity { position = (x + vx * speedValue * secs, y + vy * speedValue * secs) }
   where
     (x, y) = position entity
