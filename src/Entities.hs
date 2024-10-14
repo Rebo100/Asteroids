@@ -92,6 +92,23 @@ makeAsteroid = Entity
     speed = 30
   }
 
+-- Update position for entities. Take secs passed, new position and entity we want to adjust position for
+updateEntityPosition :: Float -> (Float, Float) -> Entity -> Entity
+-- Update the players position
+updateEntityPosition secs (nx, ny) entity@Entity { entityType = MkShip _ } =
+  entity { position = (x + nx * speedValue * secs, y + ny * speedValue * secs) } -- we add nx/ny (new x/y value) to the original position and multiply it by speed and time
+  where
+    (x, y) = position entity -- Current/old position entity
+    speedValue = speed entity -- Speed attribute given in Entity.hs
+-- Update the asteroid's position
+updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid _ } =
+  entity { position = (x + vx * speedValue * secs, y + vy * speedValue * secs) }
+  where
+    (x, y) = position entity
+    (vx, vy) = vector entity
+    speedValue = speed entity
+updateEntityPosition _ _ entity = undefined
+
 -- Levels
 data Level
   = Lvl1
