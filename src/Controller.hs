@@ -25,4 +25,4 @@ step secs gstate | not (isRunning gstate) = exitSuccess
                  | otherwise = do -- Update the game state
                  -- Decide if we have to add new asteroid or not
                   (newEntities, newAsteroidTime) <- createAsteroid (elapsedTime gstate + secs) gstate
-                  return $ gstate { elapsedTime = elapsedTime gstate + secs, timeSinceAsteroid = newAsteroidTime, entities = map (updateEntityPosition secs (playerDirection (keyPressed gstate))) newEntities }
+                  return $ gstate { elapsedTime = elapsedTime gstate + secs, timeSinceAsteroid = newAsteroidTime, entities = map (updateEntityPosition secs (keyPressed gstate)) newEntities }

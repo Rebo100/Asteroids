@@ -20,7 +20,7 @@ input (EventResize window) gstate = -- Handle window resize
     scale  = min scaleX scaleY
   in return $ gstate { windowScale = scale }
 input (EventMotion (x, y)) gstate = return $ gstate { mousePosition = (x, y) }
-input _ gstate = return gstate -- Otherwise keep the same
+-- input _ gstate = return gstate -- Otherwise keep the same (VSCode gaf een warning dat hij redundant was, dus voor nu even weggecomment)
 
 -- Handlle key presses (Helper function for input)
 inputKey :: Event -> GameState -> GameState

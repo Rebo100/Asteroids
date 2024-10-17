@@ -12,8 +12,7 @@ createAsteroid time gstate
   | asteroidInterval gstate == Nothing = return (entities gstate, timeSinceAsteroid gstate)  -- we dont want asteroids (Value for interval is nothing: See model.hs)
   | timeSinceLastAsteroid >= interval = do 
     -- Create a new asteroid
-      let (windowWidth, windowHeight) = getWindowSize gstate -- Get windowsize
-      (randomX, randomY, vectorX, vectorY) <- generateAsteroidValues windowWidth windowHeight -- Determine the position and direction of the asteroid
+      (randomX, randomY, vectorX, vectorY) <- generateAsteroidValues -- Determine the position and direction of the asteroid
       let newAsteroid = makeAsteroid { position = (randomX, randomY), vector = (vectorX, vectorY) } -- Create asteroid through makeAsteroid function with values we jsut got
           newEntities = newAsteroid : entities gstate -- Add the asteroid to the list of entities
       return (newEntities, time) -- Return the new list of entities and time
@@ -23,15 +22,12 @@ createAsteroid time gstate
     timeSinceLastAsteroid = time - timeSinceAsteroid gstate
     Just interval = asteroidInterval gstate
 
--- Helper function to get the scaled window size
-getWindowSize :: GameState -> (Float, Float)
-getWindowSize gstate = (fromIntegral (fst originalWindowSize) * windowScale gstate, fromIntegral (snd originalWindowSize) * windowScale gstate)
-
 -- Generate a random position and direction for an asteroid
-generateAsteroidValues :: Float -> Float -> IO (Float, Float, Float, Float)
-generateAsteroidValues windowWidth windowHeight = do
-  -- Generate a random number (elke border has a number, randomly choose a border, then on the border randomly spawn on x and y positions)
-  -- Used as reference for randomRIO usage: https://stackoverflow.com/questions/22526629/am-i-using-randomrio-wrong
+generateAsteroidValues :: IO (Float, Float, Float, Float)
+generateAsteroidValues = do
+  let windowWidth = 400
+      windowHeight = 400
+  -- Generate a random number (each border has a number, randomly choose a border, then on the border randomly spawn on x and y positions)
   border <- randomRIO (1, 4) :: IO Int
   -- Generate a random x and y value
   randomX <- randomRIO (-windowWidth / 2, windowWidth / 2)
