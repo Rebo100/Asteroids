@@ -6,7 +6,8 @@ import Graphics.Gloss
 import Model
 import Menu's
 import Config
-import Entities
+import Entities.Entity
+import Entities.Ship
 import Toolbox (drawHitboxOn)
 
 view :: GameState -> IO Picture

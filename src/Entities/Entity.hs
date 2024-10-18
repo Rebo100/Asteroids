@@ -1,9 +1,14 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-module Entities where
+module Entities.Entity where
 import Graphics.Gloss (Vector)
 import System.Random (mkStdGen, randomR, StdGen)
 import Data.Bifunctor (Bifunctor(bimap))
+import Entities.Ship
+import Entities.Asteroid
+import Entities.Stats
+import Entities.Bullets
+import Entities.PowerUp
 
 
 -- Entities
@@ -38,95 +43,45 @@ createHitbox :: Entity -> Size
 createHitbox (Entity (MkShip _) _ _ size) = size / 3
 createHitbox (Entity _ _ _ size) = size
 
-updateLives :: Ship -> Int -> Ship
-updateLives ship@(Ship _ _ _ (Stats _ live) _ _ _) i = ship { playerStats = (playerStats ship) { lives = live + i} }
-
--- Stats
-type Lives = Int
-type Damage = Float
-
-data Stats = Stats
-  { 
-    damage :: Damage,
-    lives :: Lives
-  }
-
--- PowerUps
-data PowerUp = PowerUp {} -- TrippleShot | Invincibility | ExtraLife | SpeedBoost
-
-emptyPowerUp :: PowerUp
-emptyPowerUp = PowerUp {}
-
--- Bullets
-data Bullet = Bullet
-  { 
-    count :: Int
-  }
-
-data Player = P1 | P2
-type Score = Int
-type FiringRate = Float
-
--- Ship
-data Ship = Ship
-  { 
-    player :: Player,
-    score :: Score,
-    powerUp :: PowerUp,
-    playerStats :: Stats,
-    playerBullet :: Bullet,
-    playerFiringRate :: FiringRate,
-    angle :: Float
-  }
-
 -- Create a player ship and set all of the initial values
 playerShip :: Entity
-playerShip = Entity
-  { 
-    entityType = MkShip Ship
-    { 
-      player = P1,
-      score = 0,
-      powerUp = emptyPowerUp,
-      playerStats = Stats { damage = 1, lives = 3 },
-      playerBullet = Bullet { count = 1 },
-      playerFiringRate = 1,
-      angle = pi / 2
-    },
-    position = (0, 0),
-    vector = (0, 0),
-    size = 10
-  }
-
--- Ship Methods
-isGameOver :: Ship -> Bool
-isGameOver (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
+playerShip =
+  Entity
+    { entityType =
+          MkShip Ship
+            { player = P1,
+              score = 0,
+              powerUp = emptyPowerUp,
+              playerStats = Stats {damage = 1, lives = 3},
+              playerBullet = Bullet {count = 1},
+              playerFiringRate = 1,
+              angle = pi / 2
+            },
+      position = (0, 0),
+      vector = (0, 0),
+      size = 10
+    }
 
 isShipDamaged :: Ship -> [Entity] -> Bool
 isShipDamaged (Ship _ _ _ (Stats _ lives) _ _ _) = undefined
--- Asteroid
-data Asteroid = Asteroid 
-  { 
-  asteroidStats :: Stats, 
-  speed :: Float 
-  }
 
 makeAsteroid :: Entity
-makeAsteroid = Entity
-  { 
-    entityType = MkAsteroid Asteroid
-    { 
-      asteroidStats = Stats
-      { 
-        damage = 1,
-        lives = 1
-      },
-      speed = 30
-    },
-    position = (0, 0),
-    vector = (0, -1),
-    size = 20
-  }
+makeAsteroid =
+  Entity
+    { entityType =
+        MkAsteroid
+          Asteroid
+            { asteroidStats =
+                Stats
+                  { damage = 1,
+                    lives = 1
+                  },
+              speed = 30
+            },
+      position = (0, 0),
+      vector = (0, -1),
+      size = 20
+    }
 
 -- Update position for entities. Takes secs passed, keys pressed, and entity we want to adjust position for
 updateEntityPosition :: Float -> [Char] -> Entity -> Entity

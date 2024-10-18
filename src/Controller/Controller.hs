@@ -9,7 +9,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Config
-import Entities
+import Entities.Entity
 import Data.Bifunctor (Bifunctor (bimap))
 import Menu's
 import Toolbox
@@ -23,8 +23,7 @@ step :: Float -> GameState -> IO GameState
 step secs gstate | not (isRunning gstate) = exitSuccess
                  | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
                  | otherwise = do -- Update the game state
-                 -- Decide if we have to add new asteroid or not
-                  return $ updateGamestate secs gstate
+                               return $ updateGamestate secs gstate
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState

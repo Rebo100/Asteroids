@@ -1,7 +1,7 @@
 -- | This module contains the data types
 --   which represent the state of the game
 module Model where
-import Entities
+import Entities.Entity
 import Menu's
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game

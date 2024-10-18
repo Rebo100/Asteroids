@@ -1,7 +1,7 @@
 module Controller.GameFunctions where
 import Model
 import Menu's
-import Entities
+import Entities.Entity
 -- Pause game
 pauseGame :: GameState -> GameState
 pauseGame gstate@(GameState _ paused _ _ _ _ _ _ _ _ _ _) | paused = gstate {isPaused = False, menu = None}
@@ -19,3 +19,5 @@ updateGamestate secs gstate = gstate
         elapsedTime = elapsedTime gstate + secs,
         entities = map (updateEntityPosition secs (keyPressed gstate)) $ entities gstate
     }
+
+-- Check player collision

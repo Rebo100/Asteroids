@@ -1,7 +1,7 @@
 module CreateEnemy where
 
 import Model
-import Entities
+import Entities.Entity
 import Config
 import Toolbox
 import System.Random (randomRIO)
