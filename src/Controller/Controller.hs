@@ -16,6 +16,7 @@ import Toolbox
 import CreateEnemy
 import Controller.Inputs
 import System.Exit (exitSuccess)
+import Controller.GameFunctions
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -23,13 +24,7 @@ step secs gstate | not (isRunning gstate) = exitSuccess
                  | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
                  | otherwise = do -- Update the game state
                  -- Decide if we have to add new asteroid or not
-                  (newEntities, newAsteroidTime) <- createAsteroid (elapsedTime gstate + secs) gstate
-                  return $ gstate 
-                    { 
-                        elapsedTime = elapsedTime gstate + secs, 
-                        timeSinceAsteroid = newAsteroidTime, 
-                        entities = map (updateEntityPosition secs (keyPressed gstate)) newEntities 
-                    }
+                  return $ updateGamestate secs gstate
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
