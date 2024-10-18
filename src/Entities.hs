@@ -3,6 +3,7 @@
 module Entities where
 import Graphics.Gloss (Vector)
 import System.Random (mkStdGen, randomR, StdGen)
+import Data.Bifunctor (Bifunctor(bimap))
 
 
 -- Entities
@@ -21,7 +22,23 @@ data EntityType
   | MkBullet Bullet
 
 type Position = (Float, Float)
+
 type Size = Float
+
+-- Entity Methods
+isColliding :: Entity -> Entity -> Bool
+isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) = 
+  let
+    distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
+    radiusSum = createHitbox e + createHitbox e2
+  in 0 <= (fst distance - radiusSum) || 0 <= (snd distance - radiusSum)
+
+createHitbox :: Entity -> Size
+createHitbox (Entity (MkShip _) _ _ size) = size / 3
+createHitbox (Entity _ _ _ size) = size
+
+updateLives :: Entity -> Int -> Entity
+updateLives entity@(Entity (MkShip ship@(Ship _ _ _ (Stats _ live) _ _ _)) _ _ _) i = undefined
 
 -- Stats
 type Lives = Int
@@ -75,6 +92,14 @@ playerShip = Entity
     size = 10
   }
 
+-- Ship Methods
+isGameOver :: Ship -> Bool
+isGameOver (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
+
+
+
+isShipDamaged :: Ship -> [Entity] -> Bool
+isShipDamaged (Ship _ _ _ (Stats _ lives) _ _ _) = undefined
 -- Asteroid
 data Asteroid = Asteroid { asteroidStats :: Stats, speed :: Float }
 

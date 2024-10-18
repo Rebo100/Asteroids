@@ -7,6 +7,7 @@ import Model
 import Menu's
 import Config
 import Entities
+import Toolbox (drawHitboxOn)
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -25,7 +26,7 @@ viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++
     menu' = drawMenu (menu gstate) (mousePosition gstate) scale
 
 drawEntity :: Entity -> Picture
-drawEntity entity = drawEntityType (entityType entity) 
+drawEntity entity = drawHitboxOn entity $ drawEntityType (entityType entity) -- Possible to draw hitbox ontop of entity here
   where
     drawEntityType (MkShip ship) = drawShip entity
     drawEntityType (MkAsteroid asteroid) = drawAsteroid entity
