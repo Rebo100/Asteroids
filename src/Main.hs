@@ -1,11 +1,10 @@
  {-# language NamedFieldPuns #-}
 module Main where
 
-import Controller
+import Controller.Controller
 import Model
 import View
 import Config
-import Input
 
 import Graphics.Gloss.Interface.IO.Game
 

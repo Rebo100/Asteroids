@@ -9,7 +9,8 @@ import Data.Bifunctor (Bifunctor(bimap))
 -- Entities
 -- data Entity location = Ship | Asteroid | PowerUp | Bullet
 data Entity = Entity
-  { entityType :: EntityType,
+  { 
+    entityType :: EntityType,
     position :: Position,
     vector :: Vector,
     size :: Size
@@ -27,7 +28,7 @@ type Size = Float
 
 -- Entity Methods
 isColliding :: Entity -> Entity -> Bool
-isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) = 
+isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
     radiusSum = createHitbox e + createHitbox e2
@@ -37,15 +38,16 @@ createHitbox :: Entity -> Size
 createHitbox (Entity (MkShip _) _ _ size) = size / 3
 createHitbox (Entity _ _ _ size) = size
 
-updateLives :: Entity -> Int -> Entity
-updateLives entity@(Entity (MkShip ship@(Ship _ _ _ (Stats _ live) _ _ _)) _ _ _) i = undefined
+updateLives :: Ship -> Int -> Ship
+updateLives ship@(Ship _ _ _ (Stats _ live) _ _ _) i = ship { playerStats = (playerStats ship) { lives = live + i} }
 
 -- Stats
 type Lives = Int
 type Damage = Float
 
 data Stats = Stats
-  { damage :: Damage,
+  { 
+    damage :: Damage,
     lives :: Lives
   }
 
@@ -57,7 +59,8 @@ emptyPowerUp = PowerUp {}
 
 -- Bullets
 data Bullet = Bullet
-  { count :: Int
+  { 
+    count :: Int
   }
 
 data Player = P1 | P2
@@ -66,7 +69,8 @@ type FiringRate = Float
 
 -- Ship
 data Ship = Ship
-  { player :: Player,
+  { 
+    player :: Player,
     score :: Score,
     powerUp :: PowerUp,
     playerStats :: Stats,
@@ -78,8 +82,10 @@ data Ship = Ship
 -- Create a player ship and set all of the initial values
 playerShip :: Entity
 playerShip = Entity
-  { entityType = MkShip Ship
-    { player = P1,
+  { 
+    entityType = MkShip Ship
+    { 
+      player = P1,
       score = 0,
       powerUp = emptyPowerUp,
       playerStats = Stats { damage = 1, lives = 3 },
@@ -96,18 +102,23 @@ playerShip = Entity
 isGameOver :: Ship -> Bool
 isGameOver (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
 
-
-
 isShipDamaged :: Ship -> [Entity] -> Bool
 isShipDamaged (Ship _ _ _ (Stats _ lives) _ _ _) = undefined
 -- Asteroid
-data Asteroid = Asteroid { asteroidStats :: Stats, speed :: Float }
+data Asteroid = Asteroid 
+  { 
+  asteroidStats :: Stats, 
+  speed :: Float 
+  }
 
 makeAsteroid :: Entity
 makeAsteroid = Entity
-  { entityType = MkAsteroid Asteroid 
-    { asteroidStats = Stats 
-      { damage = 1, 
+  { 
+    entityType = MkAsteroid Asteroid
+    { 
+      asteroidStats = Stats
+      { 
+        damage = 1,
         lives = 1
       },
       speed = 30
@@ -121,7 +132,7 @@ makeAsteroid = Entity
 updateEntityPosition :: Float -> [Char] -> Entity -> Entity
 -- Update the player's position
 updateEntityPosition secs keys entity@Entity { entityType = MkShip ship } =
-  entity { position = finalPosition, vector = (newVx, newVy), entityType = MkShip newShip } 
+  entity { position = finalPosition, vector = (newVx, newVy), entityType = MkShip newShip }
   where
     currentAngle  = angle ship                                          -- Angle of the ship
     rotationSpeed = 2 * pi                                              -- speed at which the ship rotates
@@ -163,7 +174,7 @@ updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid asteroid } =
   where
     (x, y) = position entity
     (vx, vy) = vector entity
-    speedValue = speed asteroid 
+    speedValue = speed asteroid
     newPosition = (x + vx * speedValue * secs, y + vy * speedValue * secs)
     finalPosition = wrapPosition newPosition
 -- Default case for other entities
@@ -184,5 +195,6 @@ data Level
   | Lvl2
   | Lvl3
   | CustomLvl
-      { levelEntities :: [Entity]
+      { 
+        levelEntities :: [Entity]
       }

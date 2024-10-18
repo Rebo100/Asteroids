@@ -1,4 +1,4 @@
-module Input where
+module Controller.Inputs where
 
 import Model
 import Graphics.Gloss.Interface.IO.Game
@@ -8,19 +8,7 @@ import Data.Bifunctor (Bifunctor (bimap))
 import Data.List (findIndex)
 import Menu's
 import System.Exit (exitSuccess)
-
--- | Handle user input
-input :: Event -> GameState -> IO GameState
-input event@(EventKey {}) gstate = return (inputKey event gstate) -- Handle key / mouse presses
-input (EventResize window) gstate = -- Handle window resize
-  let
-    (x, y) = bimap fromIntegral fromIntegral window
-    scaleX = (x / fromIntegral (fst Config.originalWindowSize))
-    scaleY = (y / fromIntegral (snd Config.originalWindowSize))
-    scale  = min scaleX scaleY
-  in return $ gstate { windowScale = scale }
-input (EventMotion (x, y)) gstate = return $ gstate { mousePosition = (x, y) }
--- input _ gstate = return gstate -- Otherwise keep the same (VSCode gaf een warning dat hij redundant was, dus voor nu even weggecomment)
+import Controller.GameFunctions
 
 -- Handlle key presses (Helper function for input)
 inputKey :: Event -> GameState -> GameState
