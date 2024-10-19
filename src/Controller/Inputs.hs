@@ -26,7 +26,7 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 
 -- Handle EscButton
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _) _ _) = gstate {isRunning = False}
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _) _ _ _) = gstate {isRunning = False}
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = pauseGame gstate
 -- Any other event
 inputKey _ gstate = gstate

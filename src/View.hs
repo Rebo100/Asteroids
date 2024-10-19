@@ -9,12 +9,14 @@ import Config
 import Entities.Entity
 import Entities.Ship
 import Toolbox (drawHitboxOn)
+import Animation
+import Data.Maybe (fromMaybe)
 
 view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ entityPictures ++ menu')
+viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
   where
     scale = windowScale gstate
     infoPictures = case infoToShow gstate of
@@ -23,6 +25,7 @@ viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++
       ShowAChar   c -> color green (text [c])
       ShowHighscore score -> color white (text ("Highscore: " ++ show score))
     buttonPictures = map (\x -> drawButton x (mousePosition gstate) scale) (buttons gstate)
+    animationPictures = map drawAnimation (animations gstate)
     entityPictures = map drawEntity (entities gstate)
     menu' = drawMenu (menu gstate) (mousePosition gstate) scale
 

@@ -9,6 +9,7 @@ import Config (originalWindowSize)
 import Data.Bifunctor (Bifunctor(bimap))
 import System.Exit (exitSuccess)
 import System.Random (mkStdGen, StdGen)
+import Animation
 
 data InfoToShow = ShowNothing
                 | ShowANumber Int
@@ -27,7 +28,8 @@ data GameState = GameState {
                    buttons :: [Button],
                    menu :: Menu,
                    timeSinceAsteroid :: Float,
-                   asteroidInterval :: Maybe Float
+                   asteroidInterval :: Maybe Float,
+                   animations :: [Animation]
                  }
 
 initialState :: GameState
@@ -46,7 +48,8 @@ initialState =
     buttons = [],
     menu = startMenu,
     timeSinceAsteroid = 0,
-    asteroidInterval = Nothing
+    asteroidInterval = Nothing,
+    animations = []
   }
 
 lvl1 :: GameState
@@ -66,8 +69,6 @@ lvl1 =
         buttons = [],
         menu = None,
         timeSinceAsteroid = 0,
-        asteroidInterval = Just 2
+        asteroidInterval = Just 2,
+        animations = []
       }
-
-
-
