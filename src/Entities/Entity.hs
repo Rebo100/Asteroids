@@ -14,18 +14,28 @@ import Entities.PowerUp
 -- Entities
 -- data Entity location = Ship | Asteroid | PowerUp | Bullet
 data Entity = Entity
-  { 
+  {
     entityType :: EntityType,
     position :: Position,
     vector :: Vector,
     size :: Size
   }
+instance Eq Entity where
+  (Entity (MkShip ship) p v s) == (Entity (MkShip ship2) p2 v2 s2) = ship == ship2 && p == p2 && v == v2 && s == s2
+  (Entity (MkAsteroid asteroid) p v s) == (Entity (MkAsteroid asteroid2) p2 v2 s2) = asteroid == asteroid2 && p == p2 && v == v2 && s == s2
+  (Entity (MkPowerUp powerUp) p v s) == (Entity (MkPowerUp powerUp2) p2 v2 s2) = powerUp == powerUp2 && p == p2 && v == v2 && s == s2
+  (Entity (MkBullet bullet) p v s) == (Entity (MkBullet bullet2) p2 v2 s2) = bullet == bullet2 && p == p2 && v == v2 && s == s2
 
 data EntityType
   = MkShip Ship
   | MkAsteroid Asteroid
   | MkPowerUp PowerUp
   | MkBullet Bullet
+instance Eq EntityType where
+  (MkShip _) == (MkShip _) = True
+  (MkAsteroid _) == (MkAsteroid _) = True
+  (MkPowerUp _) == (MkPowerUp _) = True
+  (MkBullet _) == (MkBullet _) = True
 
 type Position = (Float, Float)
 
@@ -37,13 +47,38 @@ isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
     radiusSum = createHitbox e + createHitbox e2
-  in 0 <= (fst distance - radiusSum) || 0 <= (snd distance - radiusSum)
+  in (e /= e2) && (0 <= (fst distance - radiusSum) || 0 <= (snd distance - radiusSum))
+
+checkCollisions :: Entity -> [Entity] -> Bool
+checkCollisions entity = any (`isColliding` entity)
 
 createHitbox :: Entity -> Size
 createHitbox (Entity (MkShip _) _ _ size) = size / 3
 createHitbox (Entity _ _ _ size) = size
 
--- Create a player ship and set all of the initial values
+-- get entities
+getEntityType :: [Entity] -> [Entity] -> EntityType -> [Entity] -- Entity list -> acc -> Type -> typed list
+getEntityType [] xss _ = xss
+getEntityType (e@(Entity et1 _ _ _ ) : xs) xss et2 | et1 == et2 = getEntityType xs (e : xss) et2
+                                                   | otherwise = getEntityType xs xss et2
+isEntityType :: Entity -> EntityType -> Bool
+isEntityType (Entity entityType _ _ _) entityType2 = entityType == entityType2
+
+-- Entity manipulation
+removeEntity :: Entity -> [Entity] -> [Entity] -> [Entity]
+removeEntity e [] acc = acc
+removeEntity e (x : xs) acc | e == x = removeEntity e xs acc -- Don't add e
+                            | otherwise = removeEntity e xs $ x : acc -- Add e
+
+replaceEntityType :: Entity -> EntityType -> Entity
+replaceEntityType e@(Entity et1 _ _ _) et2 = e {entityType = et2}
+
+-- Convert to entityType
+toShip :: [Entity] -> [Ship] -> [Ship]
+toShip [] xss = xss
+toShip ((Entity (MkShip s) _ _ _) : xs) xss = toShip xs (s : xss)
+
+-- Defining entities
 playerShip :: Entity
 playerShip =
   Entity
@@ -52,7 +87,7 @@ playerShip =
             { player = P1,
               score = 0,
               powerUp = emptyPowerUp,
-              playerStats = Stats {damage = 1, lives = 3},
+              playerStats = Stats {damage = 1, lives = 1},
               playerBullet = Bullet {count = 1},
               playerFiringRate = 1,
               angle = pi / 2
@@ -61,9 +96,6 @@ playerShip =
       vector = (0, 0),
       size = 10
     }
-
-isShipDamaged :: Ship -> [Entity] -> Bool
-isShipDamaged (Ship _ _ _ (Stats _ lives) _ _ _) = undefined
 
 makeAsteroid :: Entity
 makeAsteroid =
@@ -150,6 +182,6 @@ data Level
   | Lvl2
   | Lvl3
   | CustomLvl
-      { 
+      {
         levelEntities :: [Entity]
       }

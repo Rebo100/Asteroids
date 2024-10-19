@@ -22,6 +22,7 @@ import Controller.GameFunctions
 step :: Float -> GameState -> IO GameState
 step secs gstate | not (isRunning gstate) = exitSuccess
                  | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
+                 | isGameOver $ toShip (getEntityType (entities gstate) [] MkShip {}) [] = exitSuccess -- todo Gameover screen comes here
                  | otherwise = do -- Update the game state
                                return $ updateGamestate secs gstate
 
