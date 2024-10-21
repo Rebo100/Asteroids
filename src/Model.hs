@@ -27,8 +27,6 @@ data GameState = GameState {
                    entities :: [Entity],
                    buttons :: [Button],
                    menu :: Menu,
-                   timeSinceAsteroid :: Float,
-                   asteroidInterval :: Maybe Float,
                    animations :: [Animation]
                  }
 
@@ -47,28 +45,11 @@ initialState =
     entities = [playerShip],
     buttons = [],
     menu = startMenu,
-    timeSinceAsteroid = 0,
-    asteroidInterval = Nothing,
     animations = []
   }
 
-lvl1 :: GameState
-lvl1 =
-  let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
-  in
-    GameState
-      { 
-        isRunning = True,
-        isPaused = False,
-        infoToShow = ShowHighscore 0,
-        elapsedTime = 0,
-        windowScale = 1,
-        keyPressed = [],
-        mousePosition = mousePos,
-        entities = [playerShip],
-        buttons = [],
-        menu = None,
-        timeSinceAsteroid = 0,
-        asteroidInterval = Just 2,
-        animations = []
-      }
+loadLvl1 :: GameState -> GameState
+loadLvl1 gstate = gstate {
+  entities = [playerShip, asteroid],
+  menu = None
+}

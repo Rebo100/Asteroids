@@ -9,11 +9,11 @@ import Data.Maybe (mapMaybe)
 import Data.List (find)
 -- Pause game
 pauseGame :: GameState -> GameState
-pauseGame gstate@(GameState _ paused _ _ _ _ _ _ _ _ _ _ _) | paused = gstate {isPaused = False, menu = None}
-                                                      | otherwise = gstate {isPaused = True, menu = pauseMenu}
+pauseGame gstate | isPaused gstate = gstate {isPaused = False, menu = None}
+                 | otherwise = gstate {isPaused = True, menu = pauseMenu}
 -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
-doButtonFunction StartGame _ = lvl1
+doButtonFunction StartGame gstate = loadLvl1 gstate
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
 
@@ -29,7 +29,7 @@ updateGamestate secs gstate = gstate
         updatedEntities = map (updateEntityPosition secs (keyPressed gstate) . updatePlayerCollision (entities gstate)) (entities gstate) -- Update positions entities
         gstateWithFlame = checkFlame updatedEntities gstate -- Check if we need to create animation for flame behind shiup
         updatedAnimations = updateAnimations secs (animations gstateWithFlame) -- If so then update animation
- 
+
 -- Check player collision
 isGameOver :: [Ship] -> Bool
 isGameOver = all isPlayerDead
@@ -40,6 +40,7 @@ isPlayerDead (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
 updatePlayerCollision :: [Entity] -> Entity -> Entity
 updatePlayerCollision xs e@(Entity (MkShip s) _ _ _) | checkCollisions e xs = e {entityType = MkShip (updateLives s (-1))}
                                                      | otherwise = e
+updatePlayerCollision _ e = e
 
 -- Spawn flame animation
 flameAnimation :: Entity -> GameState -> GameState
@@ -49,8 +50,8 @@ flameAnimation shipEntity gstate =
       let
         -- Get angle and pos of ship, vanuit daar kijken we waar we de flame willen plaatsen
         (shipX, shipY) = position shipEntity
-        shipAngle = angle ship  
-        flameOffset = ( -cos shipAngle * (size shipEntity), -sin shipAngle * (size shipEntity)) -- Offset (dit heeft echt te lang gekost)
+        shipAngle = angle ship
+        flameOffset = (-cos shipAngle * (size shipEntity),-sin shipAngle * (size shipEntity)) -- Offset (dit heeft echt te lang gekost)
         flamePos = (shipX + fst flameOffset, shipY + snd flameOffset) -- Spawn locatie voor de flame
         -- Create a new flame animatie
         flame = Animation
@@ -59,7 +60,7 @@ flameAnimation shipEntity gstate =
           , currentFrame = 0
           , frameTime = 0.035  -- seconden per frame (hiermee kan je beetje rondspelen als je t iets anders wilt)
           , animElapsedTime = 0
-          , totalFrames = 3 
+          , totalFrames = 3
           }
       in gstate { animations = flame : animations gstate }
     _ -> gstate  -- Dont do anything for other entities

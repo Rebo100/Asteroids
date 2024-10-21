@@ -25,6 +25,7 @@ instance Eq Entity where
   (Entity (MkAsteroid asteroid) p v s) == (Entity (MkAsteroid asteroid2) p2 v2 s2) = asteroid == asteroid2 && p == p2 && v == v2 && s == s2
   (Entity (MkPowerUp powerUp) p v s) == (Entity (MkPowerUp powerUp2) p2 v2 s2) = powerUp == powerUp2 && p == p2 && v == v2 && s == s2
   (Entity (MkBullet bullet) p v s) == (Entity (MkBullet bullet2) p2 v2 s2) = bullet == bullet2 && p == p2 && v == v2 && s == s2
+  _ == _ = False
 
 data EntityType
   = MkShip Ship
@@ -36,6 +37,7 @@ instance Eq EntityType where
   (MkAsteroid _) == (MkAsteroid _) = True
   (MkPowerUp _) == (MkPowerUp _) = True
   (MkBullet _) == (MkBullet _) = True
+  _ == _ = False
 
 type Position = (Float, Float)
 
@@ -47,7 +49,7 @@ isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
     radiusSum = createHitbox e + createHitbox e2
-  in e /= e2 && (0 >= (fst distance - radiusSum) || 0 >= (snd distance - radiusSum))
+  in e /= e2 && (0 >= (fst distance - radiusSum) && 0 >= (snd distance - radiusSum))
 
 checkCollisions :: Entity -> [Entity] -> Bool
 checkCollisions entity = any (`isColliding` entity)
@@ -97,8 +99,8 @@ playerShip =
       size = 10
     }
 
-makeAsteroid :: Entity
-makeAsteroid =
+asteroid :: Entity
+asteroid =
   Entity
     { entityType =
         MkAsteroid
@@ -107,10 +109,9 @@ makeAsteroid =
                 Stats
                   { damage = 1,
                     lives = 1
-                  },
-              speed = 30
+                  }
             },
-      position = (0, 0),
+      position = (50, 50),
       vector = (0, -1),
       size = 20
     }
@@ -161,8 +162,7 @@ updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid asteroid } =
   where
     (x, y) = position entity
     (vx, vy) = vector entity
-    speedValue = speed asteroid
-    newPosition = (x + vx * speedValue * secs, y + vy * speedValue * secs)
+    newPosition = (x + vx * secs, y + vy * secs)
     finalPosition = wrapPosition newPosition
 -- Default case for other entities
 updateEntityPosition _ _ entity = entity
@@ -175,13 +175,3 @@ wrapPosition (x, y) = (wrap x, wrap y)
       | cord < -210 = cord + 410
       | cord > 210  = cord - 410
       | otherwise    = cord
-
--- Levels
-data Level
-  = Lvl1
-  | Lvl2
-  | Lvl3
-  | CustomLvl
-      {
-        levelEntities :: [Entity]
-      }

@@ -13,7 +13,6 @@ import Entities.Entity
 import Data.Bifunctor (Bifunctor (bimap))
 import Menu's
 import Toolbox
-import CreateEnemy
 import Controller.Inputs
 import System.Exit (exitSuccess)
 import Controller.GameFunctions

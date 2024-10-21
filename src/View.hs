@@ -28,7 +28,7 @@ viewPure gstate = Scale scale scale $ Pictures (border : infoPictures : buttonPi
     animationPictures = map drawAnimation (animations gstate)
     entityPictures = map drawEntity (entities gstate)
     menu' = drawMenu (menu gstate) (mousePosition gstate) scale
-    border = color blue $ drawRectangle [(fromIntegral $ fst originalWindowSize, fromIntegral $ fst originalWindowSize), (fromIntegral $ fst originalWindowSize, fromIntegral $ fst originalWindowSize)]
+    border = color blue $ drawRectangle [(-(fromIntegral $ fst originalWindowSize), -(fromIntegral $ fst originalWindowSize)), (fromIntegral $ fst originalWindowSize, fromIntegral $ fst originalWindowSize)]
 
 drawEntity :: Entity -> Picture
 drawEntity entity = drawHitboxOn entity $ drawEntityType (entityType entity) -- Possible to draw hitbox ontop of entity here
