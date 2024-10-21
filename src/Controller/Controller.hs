@@ -9,9 +9,9 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Config
-import Entities.Entity
+import Objects.Entities.Entity
 import Data.Bifunctor (Bifunctor (bimap))
-import Menu's
+import Objects.Menu's
 import Toolbox
 import Controller.Inputs
 import System.Exit (exitSuccess)

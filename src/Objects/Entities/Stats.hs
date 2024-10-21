@@ -1,4 +1,4 @@
-module Entities.Stats where
+module Objects.Entities.Stats where
 
 -- Stats
 type Lives = Int

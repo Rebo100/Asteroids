@@ -1,4 +1,4 @@
-module Menu's where
+module Objects.Menu's where
 
     import Graphics.Gloss
     import Toolbox

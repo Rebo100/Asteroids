@@ -1,4 +1,4 @@
-module Entities.Bullets where
+module Objects.Entities.Bullets where
 
 -- Bullets
 data Bullet = Bullet

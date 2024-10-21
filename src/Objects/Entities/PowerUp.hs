@@ -1,4 +1,4 @@
-module Entities.PowerUp where
+module Objects.Entities.PowerUp where
 
 -- PowerUps
 data PowerUp = PowerUp {} -- TrippleShot | Invincibility | ExtraLife | SpeedBoost

@@ -1,9 +1,9 @@
 module Controller.GameFunctions where
 import Model
-import Menu's
-import Entities.Entity
-import Entities.Ship
-import Entities.Stats
+import Objects.Menu's
+import Objects.Entities.Entity
+import Objects.Entities.Ship
+import Objects.Entities.Stats
 import Animation
 import Data.Maybe (mapMaybe)
 import Data.List (find)

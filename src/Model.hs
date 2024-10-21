@@ -1,8 +1,8 @@
 -- | This module contains the data types
 --   which represent the state of the game
 module Model where
-import Entities.Entity
-import Menu's
+import Objects.Entities.Entity
+import Objects.Menu's
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import Config (originalWindowSize)

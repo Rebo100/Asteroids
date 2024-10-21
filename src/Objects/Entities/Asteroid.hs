@@ -1,5 +1,5 @@
-module Entities.Asteroid where
-import Entities.Stats
+module Objects.Entities.Asteroid where
+import Objects.Entities.Stats
 
 -- Asteroid
 data Asteroid = Asteroid

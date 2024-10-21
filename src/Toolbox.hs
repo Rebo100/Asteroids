@@ -3,7 +3,7 @@ module Toolbox where
 
 import Graphics.Gloss
 import Config
-import Entities.Entity
+import Objects.Entities.Entity
 
 -- Drawing
 drawRectangle :: [(Float, Float)] -> Picture

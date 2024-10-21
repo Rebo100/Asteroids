@@ -1,7 +1,7 @@
-module Entities.Ship where
-import Entities.Stats
-import Entities.PowerUp
-import Entities.Bullets
+module Objects.Entities.Ship where
+import Objects.Entities.Stats
+import Objects.Entities.PowerUp
+import Objects.Entities.Bullets
 
 -- Ship
 data Ship = Ship

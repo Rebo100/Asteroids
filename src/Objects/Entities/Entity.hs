@@ -1,14 +1,14 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-module Entities.Entity where
+module Objects.Entities.Entity where
 import Graphics.Gloss (Vector)
 import System.Random (mkStdGen, randomR, StdGen)
 import Data.Bifunctor (Bifunctor(bimap))
-import Entities.Ship
-import Entities.Asteroid
-import Entities.Stats
-import Entities.Bullets
-import Entities.PowerUp
+import Objects.Entities.Ship
+import Objects.Entities.Asteroid
+import Objects.Entities.Stats
+import Objects.Entities.Bullets
+import Objects.Entities.PowerUp
 
 
 -- Entities

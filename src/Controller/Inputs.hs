@@ -6,7 +6,7 @@ import Config
 import Toolbox
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.List (findIndex)
-import Menu's
+import Objects.Menu's
 import System.Exit (exitSuccess)
 import Controller.GameFunctions
 

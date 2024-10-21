@@ -4,10 +4,10 @@ module View where
 
 import Graphics.Gloss
 import Model
-import Menu's
+import Objects.Menu's
 import Config
-import Entities.Entity
-import Entities.Ship
+import Objects.Entities.Entity
+import Objects.Entities.Ship
 import Toolbox (drawHitboxOn, drawRectangle)
 import Animation
 import Data.Maybe (fromMaybe)
