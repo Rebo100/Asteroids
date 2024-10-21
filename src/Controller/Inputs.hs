@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-missing-fields #-}
 module Controller.Inputs where
 
 import Model
@@ -26,8 +27,8 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 
 -- Handle EscButton
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate@(GameState _ _ _ _ _ _ _ _ _ (StartMenu _) _) = gstate {isRunning = False}
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = pauseGame gstate
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate | menu gstate == StartMenu {} = gstate {isRunning = False}
+                                                        | otherwise = pauseGame gstate
 -- Any other event
 inputKey _ gstate = gstate
 

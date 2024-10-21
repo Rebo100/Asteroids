@@ -8,6 +8,11 @@ module Objects.Menu's where
       PauseMenu PauseMenu |
       None
 
+    instance Eq Menu where
+      StartMenu _ == StartMenu _ = True
+      PauseMenu _ == PauseMenu _ = True
+      None == None = True
+      _ == _ = False
 -- Startmenu
     type StartMenu = [Button]
     startMenu = StartMenu
@@ -21,7 +26,7 @@ module Objects.Menu's where
     pauseMenu = PauseMenu
         [ 
           Button "Resume" [(-120, 50), (120, 100)] (makeColorI 141 141 141 255) ResumeGame,
-          Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
+          Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) RestartLvl,
           Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
         ]
 
@@ -32,7 +37,7 @@ module Objects.Menu's where
     buttonFunction :: ButtonFunction
     }
 
-    data ButtonFunction = StartGame | ExitGame | ResumeGame
+    data ButtonFunction = StartGame | ExitGame | ResumeGame | RestartLvl
 
 -- Methods
 --Menu's

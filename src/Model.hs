@@ -27,7 +27,8 @@ data GameState = GameState {
                    entities :: [Entity],
                    buttons :: [Button],
                    menu :: Menu,
-                   animations :: [Animation]
+                   animations :: [Animation],
+                   levelIndex :: Int
                  }
 
 initialState :: GameState
@@ -45,11 +46,6 @@ initialState =
     entities = [playerShip],
     buttons = [],
     menu = startMenu,
-    animations = []
+    animations = [],
+    levelIndex = 0
   }
-
-loadLvl1 :: GameState -> GameState
-loadLvl1 gstate = gstate {
-  entities = [playerShip, asteroid],
-  menu = None
-}

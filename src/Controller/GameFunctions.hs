@@ -7,15 +7,17 @@ import Objects.Entities.Stats
 import Animation
 import Data.Maybe (mapMaybe)
 import Data.List (find)
+import LevelLoader (loadNextLvl, reloadLvl)
 -- Pause game
 pauseGame :: GameState -> GameState
 pauseGame gstate | isPaused gstate = gstate {isPaused = False, menu = None}
                  | otherwise = gstate {isPaused = True, menu = pauseMenu}
 -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
-doButtonFunction StartGame gstate = loadLvl1 gstate
+doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None}
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
+doButtonFunction RestartLvl gstate = reloadLvl gstate
 
 -- Update gamestate
 updateGamestate :: Float -> GameState -> GameState
