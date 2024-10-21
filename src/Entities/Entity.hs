@@ -47,7 +47,7 @@ isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
     radiusSum = createHitbox e + createHitbox e2
-  in (e /= e2) && (0 <= (fst distance - radiusSum) || 0 <= (snd distance - radiusSum))
+  in e /= e2 && (0 >= (fst distance - radiusSum) || 0 >= (snd distance - radiusSum))
 
 checkCollisions :: Entity -> [Entity] -> Bool
 checkCollisions entity = any (`isColliding` entity)

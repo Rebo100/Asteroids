@@ -22,11 +22,11 @@ updateGamestate :: Float -> GameState -> GameState
 updateGamestate secs gstate = gstate
     {
         elapsedTime = elapsedTime gstate + secs,
-        entities = map (updateEntityPosition secs (keyPressed gstate)) $ entities gstate,
+        entities = updatedEntities,
         animations = updatedAnimations
     }
     where
-        updatedEntities = map (updateEntityPosition secs (keyPressed gstate)) (entities gstate) -- Update positions entities
+        updatedEntities = map (updateEntityPosition secs (keyPressed gstate) . updatePlayerCollision (entities gstate)) (entities gstate) -- Update positions entities
         gstateWithFlame = checkFlame updatedEntities gstate -- Check if we need to create animation for flame behind shiup
         updatedAnimations = updateAnimations secs (animations gstateWithFlame) -- If so then update animation
  
@@ -37,37 +37,9 @@ isGameOver = all isPlayerDead
 isPlayerDead :: Ship -> Bool
 isPlayerDead (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
 
-
-
-
-updatePlayerCollision :: [Entity] -> [Entity]
-updatePlayerCollision xs = 
-    let
-        ships = getEntityType xs [] MkShip {}
-        updatedList = map (`updatePlayerCollision'` xs) ships
-    in concat updatedList
-
-updatePlayerCollision' :: Entity -> [Entity] -> [Entity]
-updatePlayerCollision' e@(Entity (MkShip s) _ _ _) xs | checkCollisions e xs = newEntity : newList
-                                                      | otherwise = xs
-                                                      where 
-                                                        newList = removeEntity e xs []
-                                                        newShip = updateLives s (-1)
-                                                        newEntity = e { entityType = MkShip newShip }
-
-    
-    
-    
-    {-- let
-        players = getEntityType (entities gstate) [] MkShip {}
-        asteroids = getEntityType (entities gstate) [] MkAsteroid {}
-        updatedPlayers = map (foldr func [] asteroids) players 
-          where 
-            func p acc | checkCollisions p asteroids = replaceEntityType p (MkShip $ updateLives (MkShip (entityType p)) -1) : acc
-                       | otherwise = p : acc
-    in gstate { entities = updatedPlayers }
-    --}
-
+updatePlayerCollision :: [Entity] -> Entity -> Entity
+updatePlayerCollision xs e@(Entity (MkShip s) _ _ _) | checkCollisions e xs = e {entityType = MkShip (updateLives s (-1))}
+                                                     | otherwise = e
 
 -- Spawn flame animation
 flameAnimation :: Entity -> GameState -> GameState

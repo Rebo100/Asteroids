@@ -15,18 +15,12 @@ data Ship = Ship
     angle :: Float
   }
 instance Eq Ship where
-  (Ship player score powerUp playerStats playerBullet playerFiringRate angle) == 
-    (Ship player2 score2 powerUp2 playerStats2 playerBullet2 playerFiringRate2 angle2) = 
-      player == player2 
-      && score == score2 
-      && powerUp == powerUp2 
-      && playerStats == playerStats2 
-      && playerBullet == playerBullet2 
-      && playerFiringRate == playerFiringRate2 
-      && angle == angle2
+  (Ship player _ _ _ _ _ _) == (Ship player2 _ _ _ _ _ _) = player == player2
 data Player = P1 | P2
 instance Eq Player where
-  p == p2 = p == p2
+  P1 == P1 = True
+  P2 == P2 = True
+  _ == _ = False 
 
 type Score = Int
 
