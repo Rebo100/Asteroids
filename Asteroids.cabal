@@ -11,5 +11,14 @@ executable gloss-counter
   main-is:             Main.hs
   build-depends:       base >= 4 && < 5, gloss, random
   hs-source-dirs:      src
-  other-modules:       Controller.Controller, Controller.Inputs, Controller.GameFunctions, Model, View, Objects.Entities.Entity, Objects.Entities.Ship, Objects.Entities.Asteroid, Objects.Entities.Stats, Objects.Entities.Bullets, Objects.Entities.PowerUp, Objects.Menu's, Toolbox, Config, Animation
+  other-modules:       Controller.Controller, Controller.Inputs, Controller.GameFunctions, 
+                       Model, 
+                       View.View,
+                       View.Draw, 
+                       Objects.Entities.Entity, Objects.Entities.Ship, Objects.Entities.Asteroid, Objects.Entities.Stats, Objects.Entities.Bullets, Objects.Entities.PowerUp, 
+                       Objects.Menu's, 
+                       Toolbox, 
+                       Config, 
+                       Animation, 
+                       LevelLoader
   default-language:    Haskell2010

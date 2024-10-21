@@ -3,7 +3,7 @@ module Main where
 
 import Controller.Controller
 import Model
-import View
+import View.View
 import Config
 
 import Graphics.Gloss.Interface.IO.Game
