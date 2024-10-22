@@ -34,11 +34,10 @@ data GameState = GameState {
 initialState :: GameState
 initialState =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
-  -- in GameState (ShowHighscore 0) 0 1 '-' mousePos [] startMenu
   in GameState {
     isRunning = True,
     isPaused = False,
-    infoToShow = ShowHighscore 0,
+    infoToShow = ShowNothing,
     elapsedTime = 0,
     windowScale = 1,
     keyPressed = [],

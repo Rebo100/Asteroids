@@ -17,7 +17,7 @@ doButtonFunction :: ButtonFunction -> GameState -> GameState
 doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None}
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
-doButtonFunction RestartLvl gstate = reloadLvl gstate
+doButtonFunction RestartLvl gstate = pauseGame $ reloadLvl gstate
 
 -- Update gamestate
 updateGamestate :: Float -> GameState -> GameState

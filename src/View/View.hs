@@ -17,7 +17,7 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = Scale scale scale $ Pictures (border : infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
+viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
   where
     scale = windowScale gstate
     infoPictures = case infoToShow gstate of
@@ -29,4 +29,4 @@ viewPure gstate = Scale scale scale $ Pictures (border : infoPictures : buttonPi
     animationPictures = map drawAnimation (animations gstate)
     entityPictures = map drawEntity (entities gstate)
     menu' = drawMenu (menu gstate) (mousePosition gstate) scale
-    border = color blue $ drawRectangle [(-(fromIntegral $ fst originalWindowSize), -(fromIntegral $ fst originalWindowSize)), (fromIntegral $ fst originalWindowSize, fromIntegral $ fst originalWindowSize)]
+    --border = color blue $ drawRectangle [(-(fromIntegral $ fst originalWindowSize), -(fromIntegral $ fst originalWindowSize)), (fromIntegral $ fst originalWindowSize, fromIntegral $ fst originalWindowSize)]

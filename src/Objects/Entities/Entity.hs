@@ -111,10 +111,15 @@ asteroid =
                     lives = 1
                   }
             },
-      position = (50, 50),
+      position = (0, 0),
       vector = (0, -1),
       size = 20
     }
+createAsteroid :: (Float, Float) -> Float -> Entity
+createAsteroid p size' = asteroid { 
+  size = size',
+  position = p
+}
 
 -- Update position for entities. Takes secs passed, keys pressed, and entity we want to adjust position for
 updateEntityPosition :: Float -> [Char] -> Entity -> Entity
