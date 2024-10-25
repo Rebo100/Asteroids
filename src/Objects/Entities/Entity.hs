@@ -45,6 +45,7 @@ type Size = Float
 
 -- Entity Methods
 isColliding :: Entity -> Entity -> Bool
+isColliding e@(Entity (MkBullet _) _ _ _) e2@(Entity (MkShip _) _ _ _) = False -- Prevent ship shooting itself
 isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
@@ -115,11 +116,20 @@ asteroid =
       vector = (0, -1),
       size = 20
     }
+
 createAsteroid :: (Float, Float) -> Float -> Entity
 createAsteroid p size' = asteroid { 
-  size = size',
-  position = p
-}
+    size = size',
+    position = p
+  }
+
+createBullet :: Position -> Vector -> Entity
+createBullet pos vec = Entity
+  { entityType = MkBullet Bullet { count = 1 }, 
+    position = pos, 
+    vector = vec, 
+    size = 2
+  }
 
 -- Update position for entities. Takes secs passed, keys pressed, and entity we want to adjust position for
 updateEntityPosition :: Float -> [Char] -> Entity -> Entity
@@ -169,9 +179,15 @@ updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid asteroid } =
     (vx, vy) = vector entity
     newPosition = (x + vx * secs, y + vy * secs)
     finalPosition = wrapPosition newPosition
+-- update bullet position
+updateEntityPosition secs _ entity@Entity { entityType = MkBullet _ } =
+  entity { position = finalPosition }
+  where
+    (x, y) = position entity
+    (vx, vy) = vector entity
+    finalPosition = (x + vx * secs, y + vy * secs)
 -- Default case for other entities
 updateEntityPosition _ _ entity = entity
-
 
 wrapPosition :: (Float, Float) -> (Float, Float)
 wrapPosition (x, y) = (wrap x, wrap y)

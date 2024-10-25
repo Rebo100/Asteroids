@@ -19,6 +19,8 @@ inputKey (EventKey (Char key) Down _ _) gstate
 -- Remove a char from the list if released
 inputKey (EventKey (Char key) Up _ _) gstate
   | key `elem` "wasd" = gstate { keyPressed = filter (/= key) (keyPressed gstate) }
+-- Space to shoot bullet
+inputKey (EventKey (SpecialKey KeySpace) Down _ _) gstate = shootBullet gstate
 -- Handle mouse clicks on buttons
 inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   let

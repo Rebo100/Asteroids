@@ -30,4 +30,4 @@ drawPowerUp :: Entity -> Picture
 drawPowerUp = undefined
 
 drawBullet :: Entity -> Picture
-drawBullet = undefined
+drawBullet entity = color green (uncurry translate (position entity) (circleSolid (size entity)))

@@ -44,6 +44,20 @@ updatePlayerCollision xs e@(Entity (MkShip s) _ _ _) | checkCollisions e xs = e 
                                                      | otherwise = e
 updatePlayerCollision _ e = e
 
+shootBullet :: GameState -> GameState
+shootBullet gstate =
+  case findPlayerShip (entities gstate) of
+    Just shipEntity ->
+      let
+        shipPos = position shipEntity -- pos of ship
+        MkShip ship = entityType shipEntity -- Ship that shoots the bullet
+        shipAngle = angle ship -- Angle ship
+        bulletSpeed = 300 -- Speed of bullet
+        bulletVector = (bulletSpeed * cos shipAngle, bulletSpeed * sin shipAngle) -- Base bullet vector on ship
+        bulletEntity = createBullet shipPos bulletVector -- Create the bullet with the above values
+      in gstate { entities = bulletEntity : entities gstate } -- Add bullet to list of entties
+    Nothing -> gstate
+
 -- Spawn flame animation
 flameAnimation :: Entity -> GameState -> GameState
 flameAnimation shipEntity gstate =
