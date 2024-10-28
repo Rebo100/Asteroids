@@ -113,7 +113,7 @@ asteroid =
                   }
             },
       position = (0, 0),
-      vector = (0, -1),
+      vector = (0, -10),
       size = 20
     }
 
@@ -157,7 +157,7 @@ updateEntityPosition secs keys entity@Entity { entityType = MkShip ship } =
 
     (x, y) = position entity                            -- Current position
     newPosition = (x + newVx * secs, y + newVy * secs)  -- Check if we have to wrap the new position (so current pos + the movement over x and y values)
-    finalPosition = wrapPosition newPosition            -- If so, wrap it, otherwise cords = cords ()
+    finalPosition = wrapPosition newPosition (size entity)            -- If so, wrap it, otherwise cords = cords ()
 
     newShip = ship { angle = newAngle }                 -- update the angle of the ship
 
@@ -178,7 +178,7 @@ updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid asteroid } =
     (x, y) = position entity
     (vx, vy) = vector entity
     newPosition = (x + vx * secs, y + vy * secs)
-    finalPosition = wrapPosition newPosition
+    finalPosition = wrapPosition newPosition (size entity) 
 -- update bullet position
 updateEntityPosition secs _ entity@Entity { entityType = MkBullet _ } =
   entity { position = finalPosition }
@@ -189,10 +189,22 @@ updateEntityPosition secs _ entity@Entity { entityType = MkBullet _ } =
 -- Default case for other entities
 updateEntityPosition _ _ entity = entity
 
-wrapPosition :: (Float, Float) -> (Float, Float)
-wrapPosition (x, y) = (wrap x, wrap y)
+-- Wrap entity around the screen
+wrapPosition :: (Float, Float) -> Float -> (Float, Float)
+wrapPosition (x, y) size = (wrapX x size, wrapY y size)
   where
-    wrap cord
-      | cord < -210 = cord + 410
-      | cord > 210  = cord - 410
-      | otherwise    = cord
+    -- Screenborders
+    screenLeft = -200
+    screenRight = 200
+    screenBottom = -200
+    screenTop = 200
+    -- Wrap on x coordinate
+    wrapX xCoord size
+      | xCoord + size < screenLeft = screenRight + size
+      | xCoord - size > screenRight = screenLeft - size
+      | otherwise = xCoord
+    -- Wrap on y coordinate
+    wrapY yCoord size
+      | yCoord + size < screenBottom = screenTop + size
+      | yCoord - size > screenTop = screenBottom - size
+      | otherwise = yCoord
