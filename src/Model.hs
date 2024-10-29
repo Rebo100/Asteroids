@@ -28,7 +28,9 @@ data GameState = GameState {
                    buttons :: [Button],
                    menu :: Menu,
                    animations :: [Animation],
-                   levelIndex :: Int
+                   levelIndex :: Int,
+                   levels :: [[Entity]],
+                   isLoaded :: Bool
                  }
 
 initialState :: GameState
@@ -46,5 +48,7 @@ initialState =
     buttons = [],
     menu = startMenu,
     animations = [],
-    levelIndex = 0
+    levelIndex = 0,
+    levels = [[]],
+    isLoaded = False
   }

@@ -16,10 +16,12 @@ import Toolbox
 import Controller.Inputs
 import System.Exit (exitSuccess)
 import Controller.GameFunctions
+import LevelLoader (initialize)
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate | not (isRunning gstate) = exitSuccess
+                 | not $ isLoaded gstate = initialize gstate
                  | isPaused gstate = return $ gstate {elapsedTime = elapsedTime gstate + secs}
                  | isGameOver $ toShip (getEntityType (entities gstate) [] MkShip {}) [] = exitSuccess -- todo Gameover screen comes here
                  | otherwise = do -- Update the game state

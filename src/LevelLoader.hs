@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
+{-# OPTIONS_GHC -Wno-missing-fields #-}
 module LevelLoader where
 
 import Objects.Entities.Entity
@@ -18,7 +19,7 @@ data LevelLoader = LevelLoader
     }
 levelLoader =
     let
-        preMades = [lvl1, lvl2, lvl3]
+        preMades = [[]]
     in LevelLoader
     {
         queue = preMades
@@ -50,52 +51,40 @@ getLvl :: Int -> Level -- Returns a lvl from the queue, unless queue is empty. W
 getLvl index | length (queue levelLoader) > index = queue levelLoader !! index
              | otherwise = generateLvl
 
-generateLvl :: Level
+generateLvl :: Level -- todo generates lvl when no lvls are provided
 generateLvl = undefined
 
 -- Custom levels
+-- Public
+initialize :: GameState -> IO GameState
+initialize gstate = do
+    levels <- parseAllLevels
+    let filePaths = scanCustomLevels
+    return gstate { isLoaded = True, levels = levels }
+
+-- Private
 createCustomLevelBlueprint :: String
-createCustomLevelBlueprint = intercalate "\n" $ replicate 200 $ replicate 200 '-'
+createCustomLevelBlueprint = let
+    row = replicate 100 '-' 
+    screenH = replicate 15 '-' ++ "X" ++ replicate 15 '-' ++ "X" ++ replicate 15 '-'
+    screenV = replicate 15 '-' ++ replicate 17 'X' ++ replicate 15 '-'
+    screen = intercalate "\n" [screenV, concat $ replicate 13 screenH, screenV]
+    in intercalate "\n" $ replicate 100 $ replicate 100 '-'
 
 createCustomLevelFile :: String -> IO ()
-createCustomLevelFile blueprint = writeFile Config.customLevelFilepath blueprint
+createCustomLevelFile = writeFile Config.customLevelFilepath
 
 scanCustomLevels :: IO [FilePath]
 scanCustomLevels = do
     let filter' = filter (\x -> isPrefixOf "Lvl" x && isSuffixOf ".txt" x)
-    filePaths <- getDirectoryContents Config.customLevelFilepath
+    filePaths <- getDirectoryContents Config.customLevelFolderFilepath
     return $ filter' filePaths
 
+parseAllLevels :: IO [Level]
+parseAllLevels = do
+    filePaths <- scanCustomLevels 
+    let lvls = map parseLevel filePaths 
+    return lvls
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- Premade levels
-lvl1 :: Level
-lvl1 = []
-lvl2 :: Level
-lvl2 = [asteroid]
-lvl3 :: Level
-lvl3 = [asteroid]
+parseLevel :: FilePath -> Level -- todo
+parseLevel _ = []
