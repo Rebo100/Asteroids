@@ -9,6 +9,7 @@ drawEntity entity = drawHitboxOn entity $ drawEntityType (entityType entity) -- 
   where
     drawEntityType (MkShip ship) = drawShip entity
     drawEntityType (MkAsteroid asteroid) = drawAsteroid entity
+    drawEntityType (MkMissile missile) = drawMissile entity
     drawEntityType (MkPowerUp powerUp) = drawPowerUp entity
     drawEntityType (MkBullet bullet) = drawBullet entity
 
@@ -25,6 +26,26 @@ drawShip entity@Entity {entityType = MkShip ship} = color white $ translate x y 
 
 drawAsteroid :: Entity -> Picture
 drawAsteroid entity = color red (uncurry translate (position entity) (circleSolid (size entity)))
+
+drawMissile :: Entity -> Picture
+drawMissile entity@Entity { entityType = MkMissile _ } = color yellow $ translate x y rotatedMissile
+  where
+    (x, y) = position entity -- Position of missile
+    (vx, vy) = vector entity -- Vector
+    missileSize = size entity -- Size
+    -- Calculate the angle met hulp van vectors
+    -- https://en.wikipedia.org/wiki/Atan2#:~:text=atan2(y%2C%20x)%20returns,programming%20language%20Fortran%20in%201961.
+    missileAngle = atan2 vy vx
+    -- Shape missile (Driehoek)
+    missileShape = Polygon
+      [ 
+        (0, missileSize),
+        (-missileSize / 2, -missileSize), 
+        (missileSize / 2, -missileSize)          
+      ]
+    -- Rotate the missile shape to align with its movement direction
+    rotatedMissile = rotate (negate $ missileAngle * 180 / pi - 90) missileShape
+
 
 drawPowerUp :: Entity -> Picture
 drawPowerUp = undefined

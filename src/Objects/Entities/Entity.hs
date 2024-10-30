@@ -9,10 +9,11 @@ import Objects.Entities.Asteroid
 import Objects.Entities.Stats
 import Objects.Entities.Bullets
 import Objects.Entities.PowerUp
-
+import Objects.Entities.Missile
+import Data.List (find)
 
 -- Entities
--- data Entity location = Ship | Asteroid | PowerUp | Bullet
+-- data Entity location = Ship | Asteroid | Missile | PowerUp | Bullet
 data Entity = Entity
   {
     entityType :: EntityType,
@@ -23,6 +24,7 @@ data Entity = Entity
 instance Eq Entity where
   (Entity (MkShip ship) p v s) == (Entity (MkShip ship2) p2 v2 s2) = ship == ship2 && p == p2 && v == v2 && s == s2
   (Entity (MkAsteroid asteroid) p v s) == (Entity (MkAsteroid asteroid2) p2 v2 s2) = asteroid == asteroid2 && p == p2 && v == v2 && s == s2
+  (Entity (MkMissile missile) p v s) == (Entity (MkMissile missile2) p2 v2 s2) = missile == missile2 && p == p2 && v == v2 && s == s2
   (Entity (MkPowerUp powerUp) p v s) == (Entity (MkPowerUp powerUp2) p2 v2 s2) = powerUp == powerUp2 && p == p2 && v == v2 && s == s2
   (Entity (MkBullet bullet) p v s) == (Entity (MkBullet bullet2) p2 v2 s2) = bullet == bullet2 && p == p2 && v == v2 && s == s2
   _ == _ = False
@@ -32,11 +34,13 @@ data EntityType
   | MkAsteroid Asteroid
   | MkPowerUp PowerUp
   | MkBullet Bullet
+  | MkMissile Missile
 instance Eq EntityType where
   (MkShip _) == (MkShip _) = True
   (MkAsteroid _) == (MkAsteroid _) = True
   (MkPowerUp _) == (MkPowerUp _) = True
   (MkBullet _) == (MkBullet _) = True
+  (MkMissile _) == (MkMissile _) = True
   _ == _ = False
 
 type Position = (Float, Float)
@@ -123,6 +127,18 @@ createAsteroid p size' = asteroid {
     position = p
   }
 
+createMissile :: Position -> Vector -> Entity
+createMissile pos vec =
+  Entity
+    { entityType =
+        MkMissile
+          Missile
+            { missileStats = Stats { damage = 1, lives = 1 } },
+      position = pos,
+      vector = vec,
+      size = 10
+    }
+
 createBullet :: Position -> Vector -> Entity
 createBullet pos vec = Entity
   { entityType = MkBullet Bullet { count = 1 }, 
@@ -132,9 +148,9 @@ createBullet pos vec = Entity
   }
 
 -- Update position for entities. Takes secs passed, keys pressed, and entity we want to adjust position for
-updateEntityPosition :: Float -> [Char] -> Entity -> Entity
+updateEntityPosition :: Float -> [Char] -> Position -> Entity -> Entity
 -- Update the player's position
-updateEntityPosition secs keys entity@Entity { entityType = MkShip ship } =
+updateEntityPosition secs keys _ entity@Entity { entityType = MkShip ship } =
   entity { position = finalPosition, vector = (newVx, newVy), entityType = MkShip newShip }
   where
     currentAngle  = angle ship                                          -- Angle of the ship
@@ -172,22 +188,50 @@ updateEntityPosition secs keys entity@Entity { entityType = MkShip ship } =
       | 'w' `elem` keys = 1
       | otherwise       = 0
 -- Update the asteroid's position
-updateEntityPosition secs _ entity@Entity { entityType = MkAsteroid asteroid } =
+updateEntityPosition secs _ _ entity@Entity { entityType = MkAsteroid asteroid } =
   entity { position = finalPosition }
   where
     (x, y) = position entity
     (vx, vy) = vector entity
     newPosition = (x + vx * secs, y + vy * secs)
-    finalPosition = wrapPosition newPosition (size entity) 
+    finalPosition = wrapPosition newPosition (size entity)
+-- Update the missile position
+updateEntityPosition secs _ playerPos entity@Entity { entityType = MkMissile missile } =
+  entity { position = newPosition, vector = (newVx, newVy) }
+  where
+    (missileX, missileY) = position entity -- x and y cords of the missile
+    (playerX, playerY) = playerPos -- x and y of the player (ship)
+    (vx, vy) = vector entity -- Vector of missile
+    
+    -- Calculate direction to player
+    directionX = playerX - missileX
+    directionY = playerY - missileY
+    distance = sqrt (directionX^2 + directionY^2) -- Stelling pythagoras to calc distance 
+
+    speed = 30  -- speed of missile
+    (newVx, newVy) = (speed * directionX / distance, speed * directionY / distance) -- Calc new vector values
+    -- Update position based on velocity
+    newPosition = wrapPosition (missileX + newVx * secs, missileY + newVy * secs) (size entity) -- New position is old pos + vectors that are calculated above
 -- update bullet position
-updateEntityPosition secs _ entity@Entity { entityType = MkBullet _ } =
+updateEntityPosition secs _ _ entity@Entity { entityType = MkBullet _ } =
   entity { position = finalPosition }
   where
     (x, y) = position entity
     (vx, vy) = vector entity
     finalPosition = (x + vx * secs, y + vy * secs)
 -- Default case for other entities
-updateEntityPosition _ _ entity = entity
+updateEntityPosition _ _ _ entity = entity
+
+-- Get player pos
+getPlayerPosition :: [Entity] -> Position
+getPlayerPosition entities = maybe (0, 0) position (findPlayerShipp entities)
+
+-- Check if entity is a ship
+findPlayerShipp :: [Entity] -> Maybe Entity
+findPlayerShipp = find (isShip . entityType)
+    where
+        isShip (MkShip _) = True
+        isShip _          = False
 
 -- Wrap entity around the screen
 wrapPosition :: (Float, Float) -> Float -> (Float, Float)

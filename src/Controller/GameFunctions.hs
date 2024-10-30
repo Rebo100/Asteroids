@@ -30,7 +30,8 @@ updateGamestate secs gstate = gstate
         animations = updatedAnimations
     }
     where
-        movedEntities = map (updateEntityPosition secs (keyPressed gstate) . updatePlayerCollision (entities gstate)) (entities gstate) -- Update positions entities
+        playerPos = getPlayerPosition (entities gstate) -- Get player position
+        movedEntities = map (updateEntityPosition secs (keyPressed gstate) playerPos . updatePlayerCollision (entities gstate)) (entities gstate) -- Update positions entities
         (updatedEntities, newAnimations) = handleCollisions movedEntities (animations gstate) -- Check entity collisions and animations for them
         gstateWithFlame = checkFlame updatedEntities gstate -- Create flame animation if needed
         updatedAnimations = updateAnimations secs (newAnimations ++ animations gstateWithFlame) -- Update animations       
@@ -47,9 +48,10 @@ updatePlayerCollision xs e@(Entity (MkShip s) _ _ _) | checkCollisions e xs = e 
                                                      | otherwise = e
 updatePlayerCollision _ e = e
 
--- Bullet and aster4oid collision
+-- Bullet and aster4oid/missile collision
 bulletCollision :: Entity -> Entity -> Bool
-bulletCollision e1 e2 = isEntityType e1 (MkBullet undefined) && isEntityType e2 (MkAsteroid undefined) && isColliding e1 e2
+bulletCollision e1 e2 = (isEntityType e1 (MkBullet undefined) && isEntityType e2 (MkAsteroid undefined) && isColliding e1 e2) ||
+                        (isEntityType e1 (MkBullet undefined) && isEntityType e2 (MkMissile undefined) && isColliding e1 e2)
 
 -- Deal with collisions (Bullet - Asteroid)
 handleCollisions :: [Entity] -> [Animation] -> ([Entity], [Animation])
@@ -66,19 +68,19 @@ handleCollisions entities animations =
   in (entitiesAfterCollisions, newAnimations) -- Return updated entities and animations after collision
 
 processBulletCollision :: ([Entity], [Animation]) -> (Entity, Entity) -> ([Entity], [Animation])
-processBulletCollision (ents, anims) (bullet, asteroid) =
+processBulletCollision (ents, anims) (bullet, enemy) =
   let
     -- Remove the bullet and asteroid from entities
-    entitiesAfterCollision = filter (`notElem` [bullet, asteroid]) ents
+    entitiesAfterCollision = filter (`notElem` [bullet, enemy]) ents
     -- Create an explosion animation at the asteroid's position
     explosionAnim = Animation
       { 
         animationType = Explosion,
-        animationPosition = position asteroid,
+        animationPosition = position enemy,
         currentFrame = 0,
         frameTime = 0.03,  -- Time per frame
         animElapsedTime = 0, 
-        totalFrames = 3
+        totalFrames = 6
       }
   in (entitiesAfterCollision, explosionAnim : anims)
 

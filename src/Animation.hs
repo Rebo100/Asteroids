@@ -29,13 +29,16 @@ flameFrames = [
                 color red $ Polygon [(-1.5,0), (1.5,0), (0,-6.5)]
               ]
 
--- The frames for the explosion when asteroid is shot (2 sets of pics)
+-- The frames for the explosion when enemy is shot
 explosionFrames :: [Picture]
 explosionFrames = 
   [
-    Color red $ circleSolid 15,
-    Color red $ circleSolid 10,
-    Color red $ circleSolid 5
+    Pictures [Color red $ circleSolid 15, Color white $ Scale 0.1 0.1 $ Text "+100"],
+    Pictures [Color red $ circleSolid 10, Color white $ Scale 0.1 0.1 $ Text "+100"],
+    Pictures [Color red $ circleSolid 5, Color white $ Scale 0.1 0.1 $ Text "+100"],
+    Pictures [Color red $ circleSolid 3, Color white $ Scale 0.1 0.1 $ Text "+100"],
+    Pictures [Color red $ circleSolid 2, Color white $ Scale 0.1 0.1 $ Text "+100"],
+    Pictures [Color red $ circleSolid 1, Color white $ Scale 0.1 0.1 $ Text "+100"]
   ]
 
 -- draw the animation frame by frame

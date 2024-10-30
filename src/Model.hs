@@ -34,8 +34,8 @@ data GameState = GameState {
 initialState :: GameState
 initialState =
   let mousePos = bimap fromIntegral fromIntegral Config.originalWindowSize
-      --testAsteroid1 = createAsteroid (-150, 50) 40
-      --testAsteroid2 = createAsteroid (100, 100) 25
+      --testAsteroid = createAsteroid (-150, 50) 40
+      --testMissile = createMissile (200, 50) (0, -5)
   in GameState {
     isRunning = True,
     isPaused = False,
