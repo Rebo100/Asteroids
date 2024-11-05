@@ -109,5 +109,5 @@ parseLine (y, s) scaleY =
     in concatMap (`charToEntity` (realToFrac $ originY - scaleY * fromIntegral y)) x's
 
 charToEntity :: (Float, Char) -> Float -> [Entity]
-charToEntity (x, c) y | c == 'a' || c == 'A' = [createAsteroid (x, y) 20]
+charToEntity (x, c) y | c == 'a' || c == 'A' = [createAsteroid (x, y*2) 20]
                       | otherwise = []

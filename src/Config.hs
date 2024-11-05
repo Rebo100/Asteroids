@@ -9,3 +9,6 @@ customLevelFolderFilepath = "src\\Levels\\"
 
 customLevelFilepath :: FilePath
 customLevelFilepath = "src\\Levels\\Lvl.txt"
+
+waveTimer :: Float
+waveTimer = 15

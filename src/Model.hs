@@ -40,7 +40,7 @@ initialState =
       --testMissile = createMissile (200, 50) (0, -5)
   in GameState {
     isRunning = True,
-    isPaused = False,
+    isPaused = True,
     infoToShow = ShowNothing,
     elapsedTime = 0,
     windowScale = (1, 1),

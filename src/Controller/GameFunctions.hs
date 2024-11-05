@@ -6,17 +6,25 @@ import Objects.Entities.Ship
 import Objects.Entities.Stats
 import Animation
 import Data.Maybe (mapMaybe)
-import Data.List (find)
+import Data.List ( find, tails )
 import LevelLoader (loadNextLvl, reloadLvl)
-import Data.List (tails)
+import Config (waveTimer)
 
+-- Next level
+isLevelOver :: GameState -> Bool
+isLevelOver gstate | length (getEntityType (entities gstate) [] MkShip{}) >= length (entities gstate) && (menu gstate)==None = True --There are only player ships
+                   | otherwise = False
+
+isWaveComing :: GameState -> Bool
+isWaveComing gstate | elapsedTime gstate > Config.waveTimer = True
+                    | otherwise = False
 -- Pause game
 pauseGame :: GameState -> GameState
 pauseGame gstate | isPaused gstate = gstate {isPaused = False, menu = None}
                  | otherwise = gstate {isPaused = True, menu = pauseMenu}
 -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
-doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None}
+doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None, isPaused = False}
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
 doButtonFunction RestartLvl gstate = pauseGame $ reloadLvl gstate
@@ -74,12 +82,12 @@ processBulletCollision (ents, anims) (bullet, enemy) =
     entitiesAfterCollision = filter (`notElem` [bullet, enemy]) ents
     -- Create an explosion animation at the asteroid's position
     explosionAnim = Animation
-      { 
+      {
         animationType = Explosion,
         animationPosition = position enemy,
         currentFrame = 0,
         frameTime = 0.03,  -- Time per frame
-        animElapsedTime = 0, 
+        animElapsedTime = 0,
         totalFrames = 6
       }
   in (entitiesAfterCollision, explosionAnim : anims)
