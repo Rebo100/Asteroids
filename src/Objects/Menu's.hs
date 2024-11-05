@@ -41,7 +41,7 @@ module Objects.Menu's where
 
 -- Methods
 --Menu's
-    drawMenu :: Menu -> (Float, Float) -> Float -> [Picture]
+    drawMenu :: Menu -> (Float, Float) -> (Float, Float) -> [Picture]
     drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu (PauseMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu None _ _ = []
@@ -52,11 +52,11 @@ module Objects.Menu's where
     getButtons None = []
 
 --Buttons
-    drawButton :: Button -> (Float, Float) -> Float -> Picture
-    drawButton button mouse scale | inRectangle mouse scaledUp = drawSelectedButton button Nothing
+    drawButton :: Button -> (Float, Float) -> (Float, Float) -> Picture
+    drawButton button mouse (scaleX, scaleY) | inRectangle mouse scaledUp = drawSelectedButton button Nothing
                             | otherwise = drawButton' button Nothing
                             where 
-                                scaledUp = map (bimap (*scale) (*scale)) (buttonShape button)
+                                scaledUp = map (bimap (*scaleX) (*scaleY)) (buttonShape button)
 
 
     drawSelectedButton :: Button -> Maybe Color -> Picture

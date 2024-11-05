@@ -17,7 +17,7 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = Scale scale scale $ Pictures (infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
+viewPure gstate = uncurry Scale scale $ Pictures (infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
   where
     scale = windowScale gstate
     infoPictures = case infoToShow gstate of

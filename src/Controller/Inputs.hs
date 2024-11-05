@@ -22,7 +22,7 @@ inputKey (EventKey (Char key) Up _ _) gstate
 -- Handle mouse clicks on buttons
 inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   let
-    scaledUps = map (map (bimap (* windowScale gstate) (* windowScale gstate)) . buttonShape) (buttons gstate ++ getButtons (menu gstate))
+    scaledUps = map (map (bimap (* fst (windowScale gstate)) (* snd (windowScale gstate))) . buttonShape) (buttons gstate ++ getButtons (menu gstate))
     inRectangles = map (mouse `inRectangle`) scaledUps
   in handleClickEvent (findIndex id inRectangles) mouse gstate
 

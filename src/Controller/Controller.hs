@@ -35,7 +35,6 @@ input (EventResize window) gstate =
   let (x, y) = bimap fromIntegral fromIntegral window
       scaleX = (x / fromIntegral (fst Config.originalWindowSize))
       scaleY = (y / fromIntegral (snd Config.originalWindowSize))
-      scale = min scaleX scaleY
-   in return $ gstate {windowScale = scale}
+   in return $ gstate {windowScale = (scaleX, scaleY)}
 input (EventMotion (x, y)) gstate = return $ gstate {mousePosition = (x, y)}
 input _ gstate = return gstate
