@@ -13,7 +13,7 @@ import Controller.GameFunctions
 
 -- Handlle key presses (Helper function for input)
 inputKey :: Event -> GameState -> GameState
--- Add a char to the list if presseed down
+-- Add a char to the list if pressed down
 inputKey (EventKey (Char key) Down _ _) gstate
   | key `elem` "wasd" = gstate { keyPressed = key : filter (/= key) (keyPressed gstate) }
 -- Remove a char from the list if released
@@ -21,12 +21,12 @@ inputKey (EventKey (Char key) Up _ _) gstate
   | key `elem` "wasd" = gstate { keyPressed = filter (/= key) (keyPressed gstate) }
 -- Space to shoot bullet
 inputKey (EventKey (SpecialKey KeySpace) Down _ _) gstate = shootBullet gstate
--- Handle mouse clicks on buttons
+-- Handle mouse clicks on buttons and shoot bullet
 inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
   let
     scaledUps = map (map (bimap (* fst (windowScale gstate)) (* snd (windowScale gstate))) . buttonShape) (buttons gstate ++ getButtons (menu gstate))
     inRectangles = map (mouse `inRectangle`) scaledUps
-  in handleClickEvent (findIndex id inRectangles) mouse gstate
+  in handleClickEvent (findIndex id inRectangles) mouse (shootBullet gstate)
 
 -- Handle EscButton
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate | menu gstate == StartMenu {} = gstate {isRunning = False}
