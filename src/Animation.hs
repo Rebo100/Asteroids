@@ -35,10 +35,7 @@ explosionFrames =
   [
     Pictures [Color red $ circleSolid 15, Color white $ Scale 0.1 0.1 $ Text "+100"],
     Pictures [Color red $ circleSolid 10, Color white $ Scale 0.1 0.1 $ Text "+100"],
-    Pictures [Color red $ circleSolid 5, Color white $ Scale 0.1 0.1 $ Text "+100"],
-    Pictures [Color red $ circleSolid 3, Color white $ Scale 0.1 0.1 $ Text "+100"],
-    Pictures [Color red $ circleSolid 2, Color white $ Scale 0.1 0.1 $ Text "+100"],
-    Pictures [Color red $ circleSolid 1, Color white $ Scale 0.1 0.1 $ Text "+100"]
+    Pictures [Color red $ circleSolid 5, Color white $ Scale 0.1 0.1 $ Text "+100"]
   ]
 
 -- draw the animation frame by frame

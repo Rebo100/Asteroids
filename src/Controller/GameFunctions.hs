@@ -88,7 +88,7 @@ processBulletCollision (ents, anims) (bullet, enemy) =
         currentFrame = 0,
         frameTime = 0.03,  -- Time per frame
         animElapsedTime = 0,
-        totalFrames = 6
+        totalFrames = 3
       }
   in (entitiesAfterCollision, explosionAnim : anims)
 
