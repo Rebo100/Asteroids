@@ -194,15 +194,22 @@ updateEntityPosition secs keys _ entity@Entity { entityType = MkShip ship } =
       | otherwise       = 0
 -- Update the asteroid's position
 updateEntityPosition secs _ _ entity@Entity { entityType = MkAsteroid asteroid } =
-  entity { position = finalPosition }
+  entity { position = finalPosition, inWindow = newInWindow }
   where
     (x, y) = position entity
     (vx, vy) = vector entity
     newPosition = (x + vx * secs, y + vy * secs)
-    finalPosition = wrapPosition newPosition (size entity)
+
+    -- Check if the entity has entered the window
+    hasEnteredWindow = isWithinWindow newPosition (size entity)
+    newInWindow = inWindow entity || hasEnteredWindow
+
+    finalPosition
+      | newInWindow = wrapPosition newPosition (size entity)
+      | otherwise = newPosition
 -- Update the missile position
 updateEntityPosition secs _ playerPos entity@Entity { entityType = MkMissile missile } =
-  entity { position = newPosition, vector = (newVx, newVy) }
+  entity { position = finalPosition, vector = (newVx, newVy) }
   where
     (missileX, missileY) = position entity -- x and y cords of the missile
     (playerX, playerY) = playerPos -- x and y of the player (ship)
@@ -215,8 +222,16 @@ updateEntityPosition secs _ playerPos entity@Entity { entityType = MkMissile mis
 
     speed = 30  -- speed of missile
     (newVx, newVy) = (speed * directionX / distance, speed * directionY / distance) -- Calc new vector values
+    newPosition = (missileX + newVx * secs, missileY + newVy * secs)
+
+    -- Check if the missile has entered the window
+    hasEnteredWindow = isWithinWindow newPosition (size entity)
+    newInWindow = inWindow entity || hasEnteredWindow
+
     -- Update position based on velocity
-    newPosition = wrapPosition (missileX + newVx * secs, missileY + newVy * secs) (size entity) -- New position is old pos + vectors that are calculated above
+    finalPosition
+      | newInWindow = wrapPosition newPosition (size entity)
+      | otherwise = newPosition
 -- update bullet position
 updateEntityPosition secs _ _ entity@Entity { entityType = MkBullet _ } =
   entity { position = finalPosition }
@@ -238,15 +253,24 @@ findPlayerShipp = find (isShip . entityType)
         isShip (MkShip _) = True
         isShip _          = False
 
+ -- Screenborders
+screenLeft, screenRight, screenBottom, screenTop :: Float
+screenLeft = -200
+screenRight = 200
+screenBottom = -200
+screenTop = 200
+
+isWithinWindow :: Position -> Size -> Bool
+isWithinWindow (x, y) size =
+  x + size >= screenLeft &&
+  x - size <= screenRight &&
+  y + size >= screenBottom &&
+  y - size <= screenTop
+
 -- Wrap entity around the screen
 wrapPosition :: (Float, Float) -> Float -> (Float, Float)
 wrapPosition (x, y) size = (wrapX x size, wrapY y size)
   where
-    -- Screenborders
-    screenLeft = -200
-    screenRight = 200
-    screenBottom = -200
-    screenTop = 200
     -- Wrap on x coordinate
     wrapX xCoord size
       | xCoord + size < screenLeft = screenRight + size
