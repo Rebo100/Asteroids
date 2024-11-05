@@ -9,6 +9,7 @@ import Data.List (intercalate, isPrefixOf, isSuffixOf)
 import Config
 import System.Directory
 import System.FilePath
+import GHC.Exts (VecCount(Vec2))
 
 
 type Level = [Entity]
@@ -110,4 +111,5 @@ parseLine (y, s) scaleY =
 
 charToEntity :: (Float, Char) -> Float -> [Entity]
 charToEntity (x, c) y | c == 'a' || c == 'A' = [createAsteroid (x, y) 20]
+                      | c == 'm' || c == 'M' = [createMissile (x, y) (0, 0)]
                       | otherwise = []
