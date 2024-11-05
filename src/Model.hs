@@ -21,14 +21,16 @@ data GameState = GameState {
                    isPaused :: Bool,
                    infoToShow  :: InfoToShow,
                    elapsedTime :: Float,
-                   windowScale :: Float,
+                   windowScale :: (Float, Float),
                    keyPressed :: [Char],
                    mousePosition :: (Float, Float),
                    entities :: [Entity],
                    buttons :: [Button],
                    menu :: Menu,
                    animations :: [Animation],
-                   levelIndex :: Int
+                   levelIndex :: Int,
+                   levels :: [[Entity]],
+                   isLoaded :: Bool
                  }
 
 initialState :: GameState
@@ -41,12 +43,14 @@ initialState =
     isPaused = False,
     infoToShow = ShowNothing,
     elapsedTime = 0,
-    windowScale = 1,
+    windowScale = (1, 1),
     keyPressed = [],
     mousePosition = mousePos,
     entities = [playerShip],
     buttons = [],
     menu = startMenu,
     animations = [],
-    levelIndex = 0
+    levelIndex = 0,
+    levels = [[]],
+    isLoaded = False
   }
