@@ -52,7 +52,7 @@ isPlayerDead :: Ship -> Bool
 isPlayerDead (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
 
 updatePlayerCollision :: [Entity] -> Entity -> Entity
-updatePlayerCollision xs e@(Entity (MkShip s) _ _ _) | checkCollisions e xs = e {entityType = MkShip (updateLives s (-1))}
+updatePlayerCollision xs e@(Entity (MkShip s) _ _ _ _) | checkCollisions e xs = e {entityType = MkShip (updateLives s (-1))}
                                                      | otherwise = e
 updatePlayerCollision _ e = e
 

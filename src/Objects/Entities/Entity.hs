@@ -19,14 +19,15 @@ data Entity = Entity
     entityType :: EntityType,
     position :: Position,
     vector :: Vector,
-    size :: Size
+    size :: Size,
+    inWindow :: Bool
   }
 instance Eq Entity where
-  (Entity (MkShip ship) p v s) == (Entity (MkShip ship2) p2 v2 s2) = ship == ship2 && p == p2 && v == v2 && s == s2
-  (Entity (MkAsteroid asteroid) p v s) == (Entity (MkAsteroid asteroid2) p2 v2 s2) = asteroid == asteroid2 && p == p2 && v == v2 && s == s2
-  (Entity (MkMissile missile) p v s) == (Entity (MkMissile missile2) p2 v2 s2) = missile == missile2 && p == p2 && v == v2 && s == s2
-  (Entity (MkPowerUp powerUp) p v s) == (Entity (MkPowerUp powerUp2) p2 v2 s2) = powerUp == powerUp2 && p == p2 && v == v2 && s == s2
-  (Entity (MkBullet bullet) p v s) == (Entity (MkBullet bullet2) p2 v2 s2) = bullet == bullet2 && p == p2 && v == v2 && s == s2
+  (Entity (MkShip ship) p v s _) == (Entity (MkShip ship2) p2 v2 s2 _) = ship == ship2 && p == p2 && v == v2 && s == s2
+  (Entity (MkAsteroid asteroid) p v s _) == (Entity (MkAsteroid asteroid2) p2 v2 s2 _) = asteroid == asteroid2 && p == p2 && v == v2 && s == s2
+  (Entity (MkMissile missile) p v s _) == (Entity (MkMissile missile2) p2 v2 s2 _) = missile == missile2 && p == p2 && v == v2 && s == s2
+  (Entity (MkPowerUp powerUp) p v s _) == (Entity (MkPowerUp powerUp2) p2 v2 s2 _) = powerUp == powerUp2 && p == p2 && v == v2 && s == s2
+  (Entity (MkBullet bullet) p v s _) == (Entity (MkBullet bullet2) p2 v2 s2 _) = bullet == bullet2 && p == p2 && v == v2 && s == s2
   _ == _ = False
 
 data EntityType
@@ -49,8 +50,8 @@ type Size = Float
 
 -- Entity Methods
 isColliding :: Entity -> Entity -> Bool
-isColliding e@(Entity (MkBullet _) _ _ _) e2@(Entity (MkShip _) _ _ _) = False -- Prevent ship shooting itself
-isColliding e@(Entity _ p _ _) e2@(Entity _ p2 _ _) =
+isColliding e@(Entity (MkBullet _) _ _ _ _) e2@(Entity (MkShip _) _ _ _ _) = False -- Prevent ship shooting itself
+isColliding e@(Entity _ p _ _ _) e2@(Entity _ p2 _ _ _) =
   let
     distance = (abs $ fst p - fst p2, abs $ snd p - snd p2)
     radiusSum = createHitbox e + createHitbox e2
@@ -60,16 +61,16 @@ checkCollisions :: Entity -> [Entity] -> Bool
 checkCollisions entity = any (`isColliding` entity)
 
 createHitbox :: Entity -> Size
-createHitbox (Entity (MkShip _) _ _ size) = size / 3
-createHitbox (Entity _ _ _ size) = size
+createHitbox (Entity (MkShip _) _ _ size _) = size / 3
+createHitbox (Entity _ _ _ size _) = size
 
 -- get entities
 getEntityType :: [Entity] -> [Entity] -> EntityType -> [Entity] -- Entity list -> acc -> Type -> typed list
 getEntityType [] xss _ = xss
-getEntityType (e@(Entity et1 _ _ _ ) : xs) xss et2 | et1 == et2 = getEntityType xs (e : xss) et2
+getEntityType (e@(Entity et1 _ _ _ _) : xs) xss et2 | et1 == et2 = getEntityType xs (e : xss) et2
                                                    | otherwise = getEntityType xs xss et2
 isEntityType :: Entity -> EntityType -> Bool
-isEntityType (Entity entityType _ _ _) entityType2 = entityType == entityType2
+isEntityType (Entity entityType _ _ _ _) entityType2 = entityType == entityType2
 
 -- Entity manipulation
 removeEntity :: Entity -> [Entity] -> [Entity] -> [Entity]
@@ -78,12 +79,12 @@ removeEntity e (x : xs) acc | e == x = removeEntity e xs acc -- Don't add e
                             | otherwise = removeEntity e xs $ x : acc -- Add e
 
 replaceEntityType :: Entity -> EntityType -> Entity
-replaceEntityType e@(Entity et1 _ _ _) et2 = e {entityType = et2}
+replaceEntityType e@(Entity et1 _ _ _ _) et2 = e {entityType = et2}
 
 -- Convert to entityType
 toShip :: [Entity] -> [Ship] -> [Ship]
 toShip [] xss = xss
-toShip ((Entity (MkShip s) _ _ _) : xs) xss = toShip xs (s : xss)
+toShip ((Entity (MkShip s) _ _ _ _) : xs) xss = toShip xs (s : xss)
 
 -- Defining entities
 playerShip :: Entity
@@ -101,7 +102,8 @@ playerShip =
             },
       position = (0, 0),
       vector = (0, 0),
-      size = 10
+      size = 10,
+      inWindow = True
     }
 
 asteroid :: Entity
@@ -118,7 +120,8 @@ asteroid =
             },
       position = (0, 0),
       vector = (0, -10),
-      size = 20
+      size = 20,
+      inWindow = False
     }
 
 createAsteroid :: (Float, Float) -> Float -> Entity
@@ -136,7 +139,8 @@ createMissile pos vec =
             { missileStats = Stats { damage = 1, lives = 1 } },
       position = pos,
       vector = vec,
-      size = 10
+      size = 10,
+      inWindow = False
     }
 
 createBullet :: Position -> Vector -> Entity
@@ -144,7 +148,8 @@ createBullet pos vec = Entity
   { entityType = MkBullet Bullet { count = 1 }, 
     position = pos, 
     vector = vec, 
-    size = 2
+    size = 2,
+    inWindow = True
   }
 
 -- Update position for entities. Takes secs passed, keys pressed, and entity we want to adjust position for
