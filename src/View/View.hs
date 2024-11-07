@@ -12,6 +12,7 @@ import Toolbox (drawHitboxOn, drawRectangle)
 import Animation
 import Data.Maybe (fromMaybe)
 import View.Draw
+import Score.Score (getPlayerScore)
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -20,10 +21,7 @@ viewPure :: GameState -> Picture -- Convert gamestate to something it can show o
 viewPure gstate = uncurry Scale scale $ Pictures (buttonPictures ++ entityPictures ++ [scorePicture] ++ animationPictures ++ menu')
   where
     scale = windowScale gstate
-    playerScore = case findPlayerShipp (entities gstate) of
-      Just (Entity (MkShip ship) _ _ _ _) -> score ship
-      _ -> 0
-    scorePicture = color white $ translate (-195) 180 $ Scale 0.15 0.15 $ text ("Score: " ++ show playerScore)
+    scorePicture = color white $ translate (-195) 180 $ Scale 0.15 0.15 $ text ("Score: " ++ show  (getPlayerScore gstate))
     buttonPictures = map (\x -> drawButton x (mousePosition gstate) scale) (buttons gstate)
     animationPictures = map drawAnimation (animations gstate)
     entityPictures = map drawEntity (entities gstate)

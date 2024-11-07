@@ -17,13 +17,16 @@ import Controller.Inputs
 import System.Exit (exitSuccess)
 import Controller.GameFunctions
 import LevelLoader (initialize, loadNextLvl)
+import Score.Score (writeScoreToFile, getPlayerScore)
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate | not (isRunning gstate) = exitSuccess
                  | not $ isLoaded gstate = initialize gstate
                  | isPaused gstate = return gstate
-                 | isGameOver $ toShip (getEntityType (entities gstate) [] MkShip {}) [] = exitSuccess -- todo Gameover screen comes here
+                 | isGameOver $ toShip (getEntityType (entities gstate) [] MkShip {}) [] = do
+                     writeScoreToFile(getPlayerScore gstate)
+                     exitSuccess -- todo Gameover screen comes here
                  | isWaveComing gstate = return $ loadNextLvl gstate { elapsedTime = 0 }
                  | otherwise = -- Update the game state
                                return $ updateGamestate secs gstate
