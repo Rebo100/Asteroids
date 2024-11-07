@@ -90,7 +90,15 @@ processBulletCollision (ents, anims) (bullet, enemy) =
         animElapsedTime = 0,
         totalFrames = 3
       }
-  in (entitiesAfterCollision, explosionAnim : anims)
+    updatedEntities = updateScore entitiesAfterCollision
+  in (updatedEntities, explosionAnim : anims)
+
+updateScore :: [Entity] -> [Entity]
+updateScore entities =
+  map updateShip entities
+  where
+    updateShip e@(Entity (MkShip ship) _ _ _ _) = e { entityType = MkShip ship { score = score ship + 100 } }  -- + 100 to score
+    updateShip e = e -- Nothing for other entities
 
 shootBullet :: GameState -> GameState
 shootBullet gstate =

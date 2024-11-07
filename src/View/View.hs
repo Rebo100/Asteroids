@@ -17,14 +17,13 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture -- Convert gamestate to something it can show on screen
-viewPure gstate = uncurry Scale scale $ Pictures (infoPictures : buttonPictures ++ animationPictures ++ entityPictures ++ menu')
+viewPure gstate = uncurry Scale scale $ Pictures (buttonPictures ++ entityPictures ++ [scorePicture] ++ animationPictures ++ menu')
   where
     scale = windowScale gstate
-    infoPictures = case infoToShow gstate of
-      ShowNothing   -> blank
-      ShowANumber n -> color green (text (show n))
-      ShowAChar   c -> color green (text [c])
-      ShowHighscore score -> color white (text ("Highscore: " ++ show score))
+    playerScore = case findPlayerShipp (entities gstate) of
+      Just (Entity (MkShip ship) _ _ _ _) -> score ship
+      _ -> 0
+    scorePicture = color white $ translate (-195) 180 $ Scale 0.15 0.15 $ text ("Score: " ++ show playerScore)
     buttonPictures = map (\x -> drawButton x (mousePosition gstate) scale) (buttons gstate)
     animationPictures = map drawAnimation (animations gstate)
     entityPictures = map drawEntity (entities gstate)
