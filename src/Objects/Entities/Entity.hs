@@ -11,6 +11,7 @@ import Objects.Entities.Bullets
 import Objects.Entities.PowerUp
 import Objects.Entities.Missile
 import Data.List (find)
+import Graphics.Gloss.Data.Vector (normalizeV)
 
 -- Entities
 -- data Entity location = Ship | Asteroid | Missile | PowerUp | Bullet
@@ -119,14 +120,15 @@ asteroid =
                   }
             },
       position = (0, 0),
-      vector = (0, -10),
+      vector = (0, 0),
       size = 20,
       inWindow = False
     }
 
-createAsteroid :: (Float, Float) -> Float -> Entity
-createAsteroid p size' = asteroid { 
+createAsteroid :: (Float, Float) -> (Float, Float) -> Float -> Entity
+createAsteroid p v size' = asteroid {
     size = size',
+    vector = v,
     position = p
   }
 
@@ -145,9 +147,9 @@ createMissile pos vec =
 
 createBullet :: Position -> Vector -> Entity
 createBullet pos vec = Entity
-  { entityType = MkBullet Bullet { count = 1 }, 
-    position = pos, 
-    vector = vec, 
+  { entityType = MkBullet Bullet { count = 1 },
+    position = pos,
+    vector = vec,
     size = 2,
     inWindow = True
   }
@@ -196,8 +198,9 @@ updateEntityPosition secs keys _ entity@Entity { entityType = MkShip ship } =
 updateEntityPosition secs _ _ entity@Entity { entityType = MkAsteroid asteroid } =
   entity { position = finalPosition, inWindow = newInWindow }
   where
-    (x, y) = position entity
+    p@(x, y) = position entity
     (vx, vy) = vector entity
+    
     newPosition = (x + vx * secs, y + vy * secs)
 
     -- Check if the entity has entered the window
@@ -214,7 +217,7 @@ updateEntityPosition secs _ playerPos entity@Entity { entityType = MkMissile mis
     (missileX, missileY) = position entity -- x and y cords of the missile
     (playerX, playerY) = playerPos -- x and y of the player (ship)
     (vx, vy) = vector entity -- Vector of missile
-    
+
     -- Calculate direction to player
     directionX = playerX - missileX
     directionY = playerY - missileY

@@ -4,6 +4,7 @@ module Toolbox where
 import Graphics.Gloss
 import Config
 import Objects.Entities.Entity
+import System.Random
 
 -- Drawing
 drawRectangle :: [(Float, Float)] -> Picture
@@ -29,6 +30,13 @@ printEntity e = sPosition ++ show (vector e) ++ sSize
     sPosition = show $ position e
     sSize = show $ size e
     
+-- Random
+getRandomScreenCoord :: IO (Float, Float)
+getRandomScreenCoord = do
+  x <- randomRIO (0, fst Config.originalWindowSize)
+  y <- randomRIO (0, snd Config.originalWindowSize)
+  return (fromIntegral x / 2, fromIntegral y / 2)
+
 -- Other
 normalizeVector :: (Float, Float) -> (Float, Float)
 normalizeVector (vx, vy)

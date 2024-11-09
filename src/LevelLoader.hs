@@ -10,6 +10,9 @@ import Config
 import System.Directory
 import System.FilePath
 import GHC.Exts (VecCount(Vec2))
+import Toolbox (getRandomScreenCoord)
+import Graphics.Gloss.Data.Vector (normalizeV)
+import Data.Bifunctor (bimap)
 
 
 type Level = [Entity]
@@ -24,34 +27,27 @@ levelLoader = do
     levels <- parseAllLevels
     return LevelLoader { queue = levels}
 
--- Methods called from somewhere else
+-- Public methods
 loadNextLvl :: GameState -> GameState
 loadNextLvl gstate =
     let
-        lvl = getLvl $ gstate
-        gst = gstate { levelIndex = levelIndex gstate + 1}
-    in loadLvl gst lvl
+        lvl = getLvl gstate
+    in gstate {levelIndex = levelIndex gstate + 1, entities = entities gstate ++ lvl}
 
-reloadLvl :: GameState -> GameState
-reloadLvl gstate = let
-    players = map (\x -> x { position = (0, 0) }) $ getEntityType (entities gstate) [] MkShip {}
-    in loadLvl gstate { entities = [] } $ getLvl $ gstate { entities = entities gstate ++ players}
+restartLvls :: GameState -> GameState
+restartLvls gstate =
+    let 
+        players = map (\x -> x { position = (0, 0) }) $ getEntityType (entities gstate) [] MkShip {}
+        restartedLvl = getLvl gstate {levelIndex = 0}
+    in gstate { entities = restartedLvl ++ players, levelIndex = 1}
 
 -- Private methods
-loadLvl :: GameState -> Level -> GameState -- Adds the entities of a lvl to the gamestate without changing the players
-loadLvl gstate lvl =
-    let players = getEntityType (entities gstate) [] MkShip{}
-    in gstate
-    {
-        entities = players ++ lvl
-    }
-
 getLvl :: GameState -> Level -- Returns a lvl from the queue, unless queue is empty. Will Generate new lvl
 getLvl gstate | length (levels gstate) > levelIndex gstate = levels gstate !! levelIndex gstate
               | otherwise = generateLvl
 
 generateLvl :: Level -- todo generates lvl when no lvls are provided
-generateLvl = undefined
+generateLvl = []
 
 -- Custom levels
 -- Public
@@ -89,27 +85,37 @@ parseLevel :: FilePath -> IO Level
 parseLevel path = do
     file <- readFile path
     let lines' = lines file
-    return $ parseLines lines'
+    parseLines lines'
 
-parseLines :: [String] -> Level
-parseLines xs =
-    let
+
+parseLines :: [String] -> IO Level
+parseLines xs = do
+    x <- mapM (`parseLine` scaleY) zip'
+    return $ concat x
+    where
         zip' = zip [1 ..] xs
         scaleY = fromIntegral (snd Config.originalWindowSize) / fromIntegral (length zip')
-    in concatMap (`parseLine` scaleY) zip'
 
-parseLine :: (Int, String) -> Float -> Level
-parseLine (y, s) scaleY =
-    let
+
+parseLine :: (Int, String) -> Float -> IO Level
+parseLine (y, s) scaleY = do
+    entities <- mapM (`charToEntity` (realToFrac $ originY - scaleY * fromIntegral y)) x's
+    return $ concat entities
+    where
         fieldSize = fst Config.originalWindowSize
         scaleX = fromIntegral fieldSize / fromIntegral (length s)
         originX = fromIntegral fieldSize / (-2)
         originY = fromIntegral fieldSize / 2
         x's = map (\(x, s') -> (realToFrac $ originX + x * scaleX, s')) $ zip [1 ..] s
 
-    in concatMap (`charToEntity` (realToFrac $ originY - scaleY * fromIntegral y)) x's
 
-charToEntity :: (Float, Char) -> Float -> [Entity]
-charToEntity (x, c) y | c == 'a' || c == 'A' = [createAsteroid (x, y) 20]
-                      | c == 'm' || c == 'M' = [createMissile (x, y) (0, 0)]
-                      | otherwise = []
+charToEntity :: (Float, Char) -> Float -> IO [Entity]
+charToEntity (x, c) y | c == 'a' || c == 'A' = do
+    p <- getRandomScreenCoord
+    let v = bimap (speed *) (speed *) $ normalizeV (bimap (\x2 -> x2 / areaDivider - x) (\y2 -> y2 / areaDivider - y) p)
+        speed = 40
+        areaDivider = 2
+    return [createAsteroid position v 20]
+                      | c == 'm' || c == 'M' = return [createMissile position (0, 0)]
+                      | otherwise = return []
+    where position = bimap (Config.gameScale *) (Config.gameScale *) (x, y)

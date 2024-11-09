@@ -7,7 +7,7 @@ import Objects.Entities.Stats
 import Animation
 import Data.Maybe (mapMaybe)
 import Data.List ( find, tails )
-import LevelLoader (loadNextLvl, reloadLvl)
+import LevelLoader (loadNextLvl, restartLvls)
 import Config (waveTimer)
 
 -- Next level
@@ -27,7 +27,7 @@ doButtonFunction :: ButtonFunction -> GameState -> GameState
 doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None, isPaused = False}
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
-doButtonFunction RestartLvl gstate = pauseGame $ reloadLvl gstate
+doButtonFunction RestartLvl gstate = pauseGame $ restartLvls gstate
 
 -- Update gamestate
 updateGamestate :: Float -> GameState -> GameState
