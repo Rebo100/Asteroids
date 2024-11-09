@@ -59,3 +59,11 @@ drawPowerUp = undefined
 
 drawBullet :: Entity -> Picture
 drawBullet entity = color green (uncurry translate (position entity) (circleSolid (size entity)))
+
+drawHighscores :: [Int] -> [Picture]
+drawHighscores scores =
+    let startingY = 50
+        yDifference = -40 -- difference compared to previous y level
+        positions = [startingY, startingY + yDifference, startingY + 2 * yDifference]
+        scorePics = zipWith (\score y -> translate (-50) y $ Scale 0.3 0.3 $ color white $ Text (show score)) scores positions
+    in scorePics

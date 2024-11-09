@@ -30,6 +30,7 @@ inputKey (EventKey (MouseButton LeftButton) Down _ mouse) gstate =
 
 -- Handle EscButton
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate | menu gstate == StartMenu {} = gstate {isRunning = False}
+                                                        | menu gstate == HighscoreMenu {} = gstate {menu = startMenu}
                                                         | otherwise = pauseGame gstate
 -- Any other event
 inputKey _ gstate = gstate

@@ -6,18 +6,21 @@ module Objects.Menu's where
     data Menu = 
       StartMenu StartMenu |
       PauseMenu PauseMenu |
+      HighscoreMenu HighscoreMenu |
       None
 
     instance Eq Menu where
       StartMenu _ == StartMenu _ = True
       PauseMenu _ == PauseMenu _ = True
+      HighscoreMenu _ == HighscoreMenu _ = True
       None == None = True
       _ == _ = False
 -- Startmenu
     type StartMenu = [Button]
     startMenu = StartMenu
       [ 
-        Button "Start" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) StartGame,
+        Button "Start" [(-120, 40), (120, 90)] (makeColorI 141 141 141 255) StartGame,
+        Button "Scores" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) ShowHighscores,
         Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
       ]
 
@@ -30,6 +33,12 @@ module Objects.Menu's where
           Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
         ]
 
+    type HighscoreMenu = [Button]
+    highscoreMenu = HighscoreMenu
+        [ 
+          Button "Back" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) BackToMainMenu
+        ]
+
     data Button = Button {
     buttonText :: String,
     buttonShape :: [(Float, Float)], -- Add the 2 opposite corners
@@ -37,18 +46,20 @@ module Objects.Menu's where
     buttonFunction :: ButtonFunction
     }
 
-    data ButtonFunction = StartGame | ExitGame | ResumeGame | RestartLvl
+    data ButtonFunction = StartGame | ExitGame | ResumeGame | RestartLvl | ShowHighscores | BackToMainMenu
 
 -- Methods
 --Menu's
     drawMenu :: Menu -> (Float, Float) -> (Float, Float) -> [Picture]
     drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu (PauseMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
+    drawMenu (HighscoreMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu None _ _ = []
 
     getButtons :: Menu -> [Button]
     getButtons (StartMenu xs) = xs
     getButtons (PauseMenu xs) = xs
+    getButtons (HighscoreMenu xs) = xs
     getButtons None = []
 
 --Buttons

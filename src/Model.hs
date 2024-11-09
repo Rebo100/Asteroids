@@ -30,7 +30,8 @@ data GameState = GameState {
                    animations :: [Animation],
                    levelIndex :: Int,
                    levels :: [[Entity]],
-                   isLoaded :: Bool
+                   isLoaded :: Bool,
+                   highScores :: [Int]
                  }
 
 initialState :: GameState
@@ -52,5 +53,6 @@ initialState =
     animations = [],
     levelIndex = 0,
     levels = [[]],
-    isLoaded = False
+    isLoaded = False,
+    highScores = []
   }

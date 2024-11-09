@@ -28,6 +28,8 @@ doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None, isPaused =
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
 doButtonFunction RestartLvl gstate = pauseGame $ restartLvls gstate
+doButtonFunction ShowHighscores gstate = gstate { menu = highscoreMenu, isPaused = True }
+doButtonFunction BackToMainMenu gstate = gstate { menu = startMenu, isPaused = True }
 
 -- Update gamestate
 updateGamestate :: Float -> GameState -> GameState
