@@ -4,7 +4,8 @@ import Objects.Entities.Stats
 -- Asteroid
 data Asteroid = Asteroid
   { 
-    asteroidStats :: Stats
+    asteroidStats :: Stats,
+    asteroidAngle :: Float
   }
 instance Eq Asteroid where
-  (Asteroid stats) == (Asteroid stats2) = stats == stats2
+  (Asteroid stats _) == (Asteroid stats2 _) = stats == stats2

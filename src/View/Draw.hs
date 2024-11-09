@@ -4,6 +4,7 @@ import Graphics.Gloss
 import Objects.Entities.Ship
 import Toolbox
 import Control.Applicative (Alternative(empty))
+import Objects.Entities.Asteroid
 
 drawEntity :: Entity -> Picture
 drawEntity entity = drawHitboxOn entity $ drawEntityType (entityType entity) -- Possible to draw hitbox ontop of entity here
@@ -26,10 +27,12 @@ drawShip entity@Entity {entityType = MkShip ship} = color white $ translate x y 
     rotatedShip = rotate (negate $ (shipAngle * 180 / pi) - 90) shipShape
 
 drawAsteroid :: Entity -> Picture
-drawAsteroid entity | position entity `inRectangle` [(-200, 200), (200, -200)] = color red (uncurry translate (position entity) (circleSolid (size entity)))
-                    | otherwise = Pictures []
-
-
+drawAsteroid (Entity { entityType = MkAsteroid asteroid, position = (x, y), size = size' }) =
+  color white $ translate x y $ rotate (asteroidAngle asteroid) $ scale (size' / 8) (size' / 8) asteroidShape
+  where
+    asteroidShape = Line
+      [ (8, 10), (11, 5), (10, -3), (6, -10), (0, -8),
+        (-5, -12), (-9, -7), (-11, 1), (-7, 8), (-1, 6), (7, 10) ]
 
 drawMissile :: Entity -> Picture
 drawMissile entity@Entity { entityType = MkMissile _ } = color yellow $ translate x y rotatedMissile

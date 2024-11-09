@@ -115,7 +115,9 @@ charToEntity (x, c) y | c == 'a' || c == 'A' = do
     let v = bimap (speed *) (speed *) $ normalizeV (bimap (\x2 -> x2 / areaDivider - x) (\y2 -> y2 / areaDivider - y) p)
         speed = 40
         areaDivider = 2
-    return [createAsteroid position v 20]
+    do
+        asteroid <- createAsteroid position v 20
+        return [asteroid]
                       | c == 'm' || c == 'M' = return [createMissile position (0, 0)]
                       | otherwise = return []
     where position = bimap (Config.gameScale *) (Config.gameScale *) (x, y)

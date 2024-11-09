@@ -2,7 +2,7 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 module Objects.Entities.Entity where
 import Graphics.Gloss (Vector)
-import System.Random (mkStdGen, randomR, StdGen)
+import System.Random (mkStdGen, randomR, StdGen, randomRIO)
 import Data.Bifunctor (Bifunctor(bimap))
 import Objects.Entities.Ship
 import Objects.Entities.Asteroid
@@ -125,12 +125,22 @@ asteroid =
       inWindow = False
     }
 
-createAsteroid :: (Float, Float) -> (Float, Float) -> Float -> Entity
-createAsteroid p v size' = asteroid {
-    size = size',
-    vector = v,
-    position = p
-  }
+createAsteroid :: (Float, Float) -> (Float, Float) -> Float -> IO Entity
+createAsteroid p v size' = do
+  randAngle <- getRandomNumber
+  return asteroid {
+      position = p,
+      vector = v,
+      size = size',
+      entityType = MkAsteroid Asteroid {
+          asteroidStats = Stats { damage = 1, lives = 1 },
+          asteroidAngle = fromIntegral randAngle
+      }
+    }
+
+-- Generate a random number for the angle of asteroid
+getRandomNumber :: IO Int
+getRandomNumber = randomRIO (0, 360)
 
 createMissile :: Position -> Vector -> Entity
 createMissile pos vec =
