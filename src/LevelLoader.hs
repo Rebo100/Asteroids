@@ -13,7 +13,7 @@ import GHC.Exts (VecCount(Vec2))
 import Toolbox (getRandomScreenCoord)
 import Graphics.Gloss.Data.Vector (normalizeV)
 import Data.Bifunctor (bimap)
-import Score.Score (readScores)
+import Score.Score (readScores, writeScoreToFile)
 
 
 type Level = [Entity]
@@ -37,11 +37,8 @@ loadNextLvl gstate =
 
 restartLvls :: GameState -> GameState
 restartLvls gstate =
-    let 
-        players = map (\x -> x { position = (0, 0) }) $ getEntityType (entities gstate) [] MkShip {}
-        updatedPlayers = map (`updateLives` Config.playerLives) players
-        restartedLvl = getLvl gstate {levelIndex = 0}
-    in gstate { entities = restartedLvl ++ players, levelIndex = 1}
+    let restartedLvl = getLvl gstate {levelIndex = 0}
+    in gstate { entities = playerShip : restartedLvl, levelIndex = 1}
 
 -- Private methods
 getLvl :: GameState -> Level -- Returns a lvl from the queue, unless queue is empty. Will Generate new lvl
@@ -56,6 +53,7 @@ generateLvl = []
 initialize :: GameState -> IO GameState
 initialize gstate = do
     levels <- parseAllLevels
+    writeScoreToFile 0
     scores <- readScores                                      
     return gstate { isLoaded = True, levels = levels, highScores = scores}
 

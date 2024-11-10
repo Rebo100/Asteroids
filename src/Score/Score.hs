@@ -9,11 +9,13 @@ import System.Directory (doesFileExist)
 import Data.List (sort)
 import Text.Read (readMaybe)
 import Data.Maybe (mapMaybe)
+import qualified Config
+import qualified Control.Monad
 
 writeScoreToFile :: Int -> IO ()
-writeScoreToFile score = 
-    createDirectoryIfMissing True "Score" >>
-    S.run (S.appendFile "Score/Highscores.txt" (show score ++ "\n")) -- Write the new score inside the file
+writeScoreToFile score = do
+    scores <- readScores
+    S.run (Control.Monad.when (null scores || (last scores < score)) $ S.appendFile Config.highScoreFilepath (show score ++ "\n")) -- Write the new score inside the file
 
 getPlayerScore :: GameState -> Int
 getPlayerScore gstate = case findPlayerShipp (entities gstate) of
@@ -22,7 +24,7 @@ getPlayerScore gstate = case findPlayerShipp (entities gstate) of
 
 readScores :: IO [Int]
 readScores =
-    S.run (S.readFile "Score/Highscores.txt" >>= \content ->
+    S.run (S.readFile Config.highScoreFilepath >>= \content ->
         let scores = mapMaybe readMaybe (lines content) :: [Int]
-            sortedScores = take 3 $ reverse $ sort scores 
+            sortedScores = take 3 $ reverse $ sort scores
         in return sortedScores)

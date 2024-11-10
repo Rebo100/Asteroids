@@ -13,6 +13,9 @@ customLevelFolderFilepath = "src\\Levels\\" -- Path to the folder containing cus
 customLevelFilepath :: FilePath
 customLevelFilepath = "src\\Levels\\Lvl.txt" -- Path for generating new customLevel-placeholder file
 
+highScoreFilepath :: FilePath
+highScoreFilepath = "Score/Highscores.txt"
+
 waveTimer :: Float
 waveTimer = 15 -- Seconds
 

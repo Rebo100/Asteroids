@@ -9,7 +9,7 @@ import Data.Maybe (mapMaybe)
 import Data.List ( find, tails )
 import LevelLoader (loadNextLvl, restartLvls)
 import Config (waveTimer)
-import Score.Score (getPlayerScore, writeScoreToFile)
+import Score.Score (getPlayerScore, writeScoreToFile, readScores)
 
 -- Next level
 isLevelOver :: GameState -> Bool
@@ -22,9 +22,12 @@ isWaveComing gstate | elapsedTime gstate > Config.waveTimer = True
 
 -- Game over
 gameOver :: GameState -> IO GameState
-gameOver gstate = 
-   writeScoreToFile score >> return gstate { menu = gameOverMenu score }
-   where score = getPlayerScore gstate
+gameOver gstate = do
+   let score = getPlayerScore gstate
+   writeScoreToFile score
+   scores <- readScores
+   return gstate { menu = gameOverMenu score, isPaused = True, highScores = scores}
+   
 -- Pause game
 pauseGame :: GameState -> GameState
 pauseGame gstate | isPaused gstate = gstate {isPaused = False, menu = None}
