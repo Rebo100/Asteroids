@@ -40,8 +40,8 @@ module Objects.Menu's where
     type GameOverMenu = [Button]
     gameOverMenu score = GameOverMenu score
       [
-        Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) RestartLvl,
-        Button "Back" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) BackToMainMenu
+        Button "Restart" [(-120, 50), (120, 100)] (makeColorI 141 141 141 255) RestartLvl,
+        Button "Back" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) BackToMainMenu
       ]
 
 -- Highscoremenu
@@ -71,7 +71,7 @@ module Objects.Menu's where
         text = translate (-100) 100 $ Scale 0.3 0.3 $ color white $ Text "Highscores:"
       in text : drawHighscores scores ++ menu
 
-    drawMenu (GameOverMenu score xs) mouse scale = drawHighscores [score] ++ map (\x -> drawButton x mouse scale) xs
+    drawMenu (GameOverMenu score xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu None _ _ = []
 
     getButtons :: Menu -> [Button]

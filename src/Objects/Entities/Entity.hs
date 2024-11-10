@@ -237,7 +237,7 @@ updateEntityPosition secs _ playerPos entity@Entity { entityType = MkMissile mis
     directionY = playerY - missileY
     distance = sqrt (directionX^2 + directionY^2) -- Stelling pythagoras to calc distance 
 
-    speed = 30  -- speed of missile
+    speed = 80  -- speed of missile
     (newVx, newVy) = (speed * directionX / distance, speed * directionY / distance) -- Calc new vector values
     newPosition = (missileX + newVx * secs, missileY + newVy * secs)
 
