@@ -13,6 +13,7 @@ import GHC.Exts (VecCount(Vec2))
 import Toolbox (getRandomScreenCoord)
 import Graphics.Gloss.Data.Vector (normalizeV)
 import Data.Bifunctor (bimap)
+import Score.Score (readScores)
 
 
 type Level = [Entity]
@@ -55,7 +56,8 @@ generateLvl = []
 initialize :: GameState -> IO GameState
 initialize gstate = do
     levels <- parseAllLevels
-    return gstate { isLoaded = True, levels = levels }
+    scores <- readScores                                      
+    return gstate { isLoaded = True, levels = levels, highScores = scores}
 
 -- Private
 createCustomLevelBlueprint :: String

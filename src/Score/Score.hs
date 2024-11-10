@@ -31,6 +31,3 @@ readScores = do
         return sortedScores -- Get the top 3 scores
     else
         return [] -- return emmpty list
-
-updateHighScores :: GameState -> [Int] -> GameState
-updateHighScores gstate scores = gstate { highScores = scores } -- Update gamestate with specific scores (in main.hs we add the scores to gstate)

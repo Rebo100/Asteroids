@@ -7,14 +7,14 @@ module Objects.Menu's where
     data Menu = 
       StartMenu StartMenu |
       PauseMenu PauseMenu |
-      HighscoreMenu HighscoreMenu |
+      HighscoreMenu [Int] HighscoreMenu |
       GameOverMenu Int GameOverMenu | 
       None
 
     instance Eq Menu where
       StartMenu _ == StartMenu _ = True
       PauseMenu _ == PauseMenu _ = True
-      HighscoreMenu _ == HighscoreMenu _ = True
+      HighscoreMenu _ _ == HighscoreMenu _ _ = True
       GameOverMenu _ _ == GameOverMenu _ _ = True
       None == None = True
       _ == _ = False
@@ -46,7 +46,7 @@ module Objects.Menu's where
 
 -- Highscoremenu
     type HighscoreMenu = [Button]
-    highscoreMenu = HighscoreMenu
+    highscoreMenu scores = HighscoreMenu scores
         [ 
           Button "Back" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) BackToMainMenu
         ]
@@ -65,14 +65,20 @@ module Objects.Menu's where
     drawMenu :: Menu -> (Float, Float) -> (Float, Float) -> [Picture]
     drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu (PauseMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
-    drawMenu (HighscoreMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
+    drawMenu (HighscoreMenu scores xs) mouse scale = 
+      let 
+        menu = map (\x -> drawButton x mouse scale) xs
+        text = translate (-100) 100 $ Scale 0.3 0.3 $ color white $ Text "Highscores:"
+      in text : drawHighscores scores ++ menu
+
     drawMenu (GameOverMenu score xs) mouse scale = drawHighscores [score] ++ map (\x -> drawButton x mouse scale) xs
     drawMenu None _ _ = []
 
     getButtons :: Menu -> [Button]
     getButtons (StartMenu xs) = xs
     getButtons (PauseMenu xs) = xs
-    getButtons (HighscoreMenu xs) = xs
+    getButtons (HighscoreMenu _ xs) = xs
+    getButtons (GameOverMenu _ xs) = xs
     getButtons None = []
 
 --Buttons

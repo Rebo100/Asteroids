@@ -35,7 +35,7 @@ doButtonFunction StartGame gstate = restartLvls gstate {menu = None, isPaused = 
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
 doButtonFunction RestartLvl gstate = restartLvls gstate {menu = None, isPaused = False}
-doButtonFunction ShowHighscores gstate = gstate { menu = highscoreMenu, isPaused = True }
+doButtonFunction ShowHighscores gstate = gstate { menu = highscoreMenu (highScores gstate), isPaused = True }
 doButtonFunction BackToMainMenu gstate = gstate { menu = startMenu, isPaused = True}
 
 -- Update gamestate
