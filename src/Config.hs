@@ -15,3 +15,6 @@ customLevelFilepath = "src\\Levels\\Lvl.txt" -- Path for generating new customLe
 
 waveTimer :: Float
 waveTimer = 15 -- Seconds
+
+playerLives :: Int
+playerLives = 3

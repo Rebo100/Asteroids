@@ -12,6 +12,7 @@ import Objects.Entities.PowerUp
 import Objects.Entities.Missile
 import Data.List (find)
 import Graphics.Gloss.Data.Vector (normalizeV)
+import qualified Config
 
 -- Entities
 -- data Entity location = Ship | Asteroid | Missile | PowerUp | Bullet
@@ -65,6 +66,9 @@ createHitbox :: Entity -> Size
 createHitbox (Entity (MkShip _) _ _ size _) = size / 3
 createHitbox (Entity _ _ _ size _) = size
 
+updateLives :: Entity -> Int -> Entity
+updateLives ship@(Entity (MkShip s) _ _ _ _) score = ship {entityType = MkShip $ updateShipLives s score}
+
 -- get entities
 getEntityType :: [Entity] -> [Entity] -> EntityType -> [Entity] -- Entity list -> acc -> Type -> typed list
 getEntityType [] xss _ = xss
@@ -96,7 +100,7 @@ playerShip =
             { player = P1,
               score = 0,
               powerUp = emptyPowerUp,
-              playerStats = Stats {damage = 1, lives = 1},
+              playerStats = Stats {damage = 1, lives = Config.playerLives},
               playerBullet = Bullet {count = 1},
               playerFiringRate = 1,
               angle = pi / 2

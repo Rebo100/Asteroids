@@ -12,8 +12,7 @@ import Toolbox (drawHitboxOn, drawRectangle)
 import Animation
 import Data.Maybe (fromMaybe)
 import View.Draw
-import Score.Score (getPlayerScore)
-import Score.Score (readScores)
+import Score.Score ( getPlayerScore, readScores )
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -28,7 +27,7 @@ viewPure gstate = uncurry Scale scale $ Pictures (buttonPictures ++ entityPictur
     entityPictures = map drawEntity (entities gstate)
     menu' = drawMenu (menu gstate) (mousePosition gstate) scale
     highscorePictures = case menu gstate of
-      HighscoreMenu _ -> 
+      HighscoreMenu _ ->
         let background = color (black) $ translate (-110) 130 $ rectangleSolid 400 400
             text = translate (-100) 100 $ Scale 0.3 0.3 $ color white $ Text "Highscores:"
         in [background, text] ++ drawHighscores (highScores gstate)

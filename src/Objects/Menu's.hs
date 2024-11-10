@@ -3,16 +3,19 @@ module Objects.Menu's where
     import Graphics.Gloss
     import Toolbox
     import Data.Bifunctor (Bifunctor(bimap))
+    import View.Draw (drawHighscores)
     data Menu = 
       StartMenu StartMenu |
       PauseMenu PauseMenu |
       HighscoreMenu HighscoreMenu |
+      GameOverMenu Int GameOverMenu | 
       None
 
     instance Eq Menu where
       StartMenu _ == StartMenu _ = True
       PauseMenu _ == PauseMenu _ = True
       HighscoreMenu _ == HighscoreMenu _ = True
+      GameOverMenu _ _ == GameOverMenu _ _ = True
       None == None = True
       _ == _ = False
 -- Startmenu
@@ -30,9 +33,18 @@ module Objects.Menu's where
         [ 
           Button "Resume" [(-120, 50), (120, 100)] (makeColorI 141 141 141 255) ResumeGame,
           Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) RestartLvl,
-          Button "Exit" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) ExitGame
+          Button "Back" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) BackToMainMenu
         ]
 
+--Gameovermenu
+    type GameOverMenu = [Button]
+    gameOverMenu score = GameOverMenu score
+      [
+        Button "Restart" [(-120, -80), (120, -30)] (makeColorI 141 141 141 255) RestartLvl,
+        Button "Back" [(-100, -150), (100, -100)] (makeColorI 141 141 141 255) BackToMainMenu
+      ]
+
+-- Highscoremenu
     type HighscoreMenu = [Button]
     highscoreMenu = HighscoreMenu
         [ 
@@ -54,6 +66,7 @@ module Objects.Menu's where
     drawMenu (StartMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu (PauseMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
     drawMenu (HighscoreMenu xs) mouse scale = map (\x -> drawButton x mouse scale) xs
+    drawMenu (GameOverMenu score xs) mouse scale = drawHighscores [score] ++ map (\x -> drawButton x mouse scale) xs
     drawMenu None _ _ = []
 
     getButtons :: Menu -> [Button]

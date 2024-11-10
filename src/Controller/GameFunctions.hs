@@ -9,6 +9,7 @@ import Data.Maybe (mapMaybe)
 import Data.List ( find, tails )
 import LevelLoader (loadNextLvl, restartLvls)
 import Config (waveTimer)
+import Score.Score (getPlayerScore, writeScoreToFile)
 
 -- Next level
 isLevelOver :: GameState -> Bool
@@ -18,18 +19,24 @@ isLevelOver gstate | length (getEntityType (entities gstate) [] MkShip{}) >= len
 isWaveComing :: GameState -> Bool
 isWaveComing gstate | elapsedTime gstate > Config.waveTimer = True
                     | otherwise = False
+
+-- Game over
+gameOver :: GameState -> IO GameState
+gameOver gstate = 
+   writeScoreToFile score >> return gstate { menu = gameOverMenu score }
+   where score = getPlayerScore gstate
 -- Pause game
 pauseGame :: GameState -> GameState
 pauseGame gstate | isPaused gstate = gstate {isPaused = False, menu = None}
                  | otherwise = gstate {isPaused = True, menu = pauseMenu}
 -- Button functionality
 doButtonFunction :: ButtonFunction -> GameState -> GameState
-doButtonFunction StartGame gstate = loadNextLvl gstate { menu = None, isPaused = False}
+doButtonFunction StartGame gstate = restartLvls gstate {menu = None, isPaused = False}
 doButtonFunction ResumeGame gstate = pauseGame gstate
 doButtonFunction ExitGame gstate = gstate { isRunning = False }
-doButtonFunction RestartLvl gstate = pauseGame $ restartLvls gstate
+doButtonFunction RestartLvl gstate = restartLvls gstate {menu = None, isPaused = False}
 doButtonFunction ShowHighscores gstate = gstate { menu = highscoreMenu, isPaused = True }
-doButtonFunction BackToMainMenu gstate = gstate { menu = startMenu, isPaused = True }
+doButtonFunction BackToMainMenu gstate = gstate { menu = startMenu, isPaused = True}
 
 -- Update gamestate
 updateGamestate :: Float -> GameState -> GameState
@@ -54,11 +61,11 @@ isPlayerDead :: Ship -> Bool
 isPlayerDead (Ship _ _ _ (Stats _ lives) _ _ _) = lives <= 0
 
 updatePlayerCollision :: [Entity] -> Entity -> Entity
-updatePlayerCollision xs e@(Entity (MkShip s) _ _ _ _) | checkCollisions e xs = e {entityType = MkShip (updateLives s (-1))}
+updatePlayerCollision xs e@(Entity (MkShip s) _ _ _ _) | checkCollisions e xs = updateLives e (-1)
                                                      | otherwise = e
 updatePlayerCollision _ e = e
 
--- Bullet and aster4oid/missile collision
+-- Bullet and asteroid/missile collision
 bulletCollision :: Entity -> Entity -> Bool
 bulletCollision e1 e2 = (isEntityType e1 (MkBullet undefined) && isEntityType e2 (MkAsteroid undefined) && isColliding e1 e2) ||
                         (isEntityType e1 (MkBullet undefined) && isEntityType e2 (MkMissile undefined) && isColliding e1 e2)

@@ -38,6 +38,7 @@ restartLvls :: GameState -> GameState
 restartLvls gstate =
     let 
         players = map (\x -> x { position = (0, 0) }) $ getEntityType (entities gstate) [] MkShip {}
+        updatedPlayers = map (`updateLives` Config.playerLives) players
         restartedLvl = getLvl gstate {levelIndex = 0}
     in gstate { entities = restartedLvl ++ players, levelIndex = 1}
 

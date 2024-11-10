@@ -12,8 +12,8 @@ import Text.Read (readMaybe)
 import Data.Maybe (mapMaybe)
 
 writeScoreToFile :: Int -> IO ()
-writeScoreToFile score = do
-    createDirectoryIfMissing True "Score" -- Create directory if it isnt there
+writeScoreToFile score = 
+    createDirectoryIfMissing True "Score" >> -- Create directory if it isnt there
     appendFile "Score/Highscores.txt" (show score ++ "\n") -- Write the new score inside the file
 
 getPlayerScore :: GameState -> Int
@@ -23,7 +23,7 @@ getPlayerScore gstate = case findPlayerShipp (entities gstate) of
 
 readScores :: IO [Int]
 readScores = do
-    exists <- doesFileExist "Score/Highscores.txt" -- Chexk if file exists
+    exists <- doesFileExist "Score/Highscores.txt" -- Check if file exists
     if exists then do
         content <- readFile "Score/Highscores.txt"
         let scores = mapMaybe readMaybe (lines content) :: [Int]

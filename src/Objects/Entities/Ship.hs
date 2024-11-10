@@ -27,5 +27,5 @@ type Score = Int
 type FiringRate = Float
 
 -- Ship Methods
-updateLives :: Ship -> Int -> Ship
-updateLives ship@(Ship _ _ _ (Stats _ live) _ _ _) i = ship {playerStats = (playerStats ship) {lives = live + i}}
+updateShipLives :: Ship -> Int -> Ship
+updateShipLives ship@(Ship _ _ _ (Stats _ live) _ _ _) i = ship {playerStats = (playerStats ship) {lives = live + i}}
