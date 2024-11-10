@@ -7,7 +7,7 @@ import Control.Applicative (Alternative(empty))
 import Objects.Entities.Asteroid
 
 drawEntity :: Entity -> Picture
-drawEntity entity = drawHitboxOn entity $ drawEntityType (entityType entity) -- Possible to draw hitbox ontop of entity here
+drawEntity entity = drawEntityType (entityType entity) -- Possible to draw hitbox ontop of entity here
   where
     drawEntityType (MkShip ship) = drawShip entity
     drawEntityType (MkAsteroid asteroid) = drawAsteroid entity
